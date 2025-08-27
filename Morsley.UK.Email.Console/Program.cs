@@ -17,7 +17,7 @@ var host = Host.CreateDefaultBuilder(args)
     .Build();
 
 var unique = Guid.NewGuid();
-var emailTo = "john@morsley.uk";
+var emailTo = host.Services.GetRequiredService<IConfiguration>()["Data:ToAddress"];
 var emailSubject = $"Test - {unique}";
 var emailBody = $"Unique: {unique}";
 
