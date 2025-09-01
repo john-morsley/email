@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email", "Morsley.UK.Email\Morsley.UK.Email.csproj", "{0EBA4A62-F8BA-482C-9949-60105CA108E8}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email.Console", "Morsley.UK.Email.Console\Morsley.UK.Email.Console.csproj", "{7F2923A9-31A4-4DBF-BC77-60C6359AB71E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B648A9A0-C062-4270-8A15-2FEADAEE9F44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email", "src\Morsley.UK.Email\Morsley.UK.Email.csproj", "{7CCD4F2B-6D68-6B52-5675-3099E781D326}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email.Console", "tests\Morsley.UK.Email.Console\Morsley.UK.Email.Console.csproj", "{6BA62D4C-8280-94F1-726D-C800357F9231}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,17 +23,21 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0EBA4A62-F8BA-482C-9949-60105CA108E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EBA4A62-F8BA-482C-9949-60105CA108E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0EBA4A62-F8BA-482C-9949-60105CA108E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0EBA4A62-F8BA-482C-9949-60105CA108E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F2923A9-31A4-4DBF-BC77-60C6359AB71E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F2923A9-31A4-4DBF-BC77-60C6359AB71E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F2923A9-31A4-4DBF-BC77-60C6359AB71E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F2923A9-31A4-4DBF-BC77-60C6359AB71E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CCD4F2B-6D68-6B52-5675-3099E781D326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CCD4F2B-6D68-6B52-5675-3099E781D326}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CCD4F2B-6D68-6B52-5675-3099E781D326}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CCD4F2B-6D68-6B52-5675-3099E781D326}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BA62D4C-8280-94F1-726D-C800357F9231}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BA62D4C-8280-94F1-726D-C800357F9231}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BA62D4C-8280-94F1-726D-C800357F9231}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BA62D4C-8280-94F1-726D-C800357F9231}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7CCD4F2B-6D68-6B52-5675-3099E781D326} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{6BA62D4C-8280-94F1-726D-C800357F9231} = {B648A9A0-C062-4270-8A15-2FEADAEE9F44}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {071D174B-0EBF-4E88-9D8B-E33D1D0BF8F3}

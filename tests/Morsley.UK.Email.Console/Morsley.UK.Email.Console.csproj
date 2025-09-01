@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Morsley.UK.Email\Morsley.UK.Email.csproj" />
+    <ProjectReference Include="..\..\src\Morsley.UK.Email\Morsley.UK.Email.csproj" />
   </ItemGroup>
 
   <ItemGroup>
