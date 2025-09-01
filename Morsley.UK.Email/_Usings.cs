@@ -4,4 +4,6 @@ global using MailKit.Net.Smtp;
 global using MailKit.Search;
 global using MailKit.Security;
 global using MimeKit;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;

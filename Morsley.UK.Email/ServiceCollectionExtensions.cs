@@ -1,4 +1,4 @@
-﻿namespace Morsley.UK.Email.Console;
+﻿namespace Morsley.UK.Email;
 
 public static class ServiceCollectionExtensions
 {
