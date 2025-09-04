@@ -1,0 +1,72 @@
+name: CD-Pipeline
+
+trigger: none
+
+resources:
+  pipelines:
+  - pipeline: dependant-cd-pipeline
+    source: john-morsley.email-ci
+    project: azure-pipeline-poc
+    branch: main
+    trigger:
+     branches:
+      include:
+      - main 
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  azureSubscription: 'morsley-uk-test'
+  appName: 'morsley-uk-test-api'
+  artifactName: 'drop'
+  packagePath: 'Morsley.UK.Email.API.zip'
+
+steps:
+# Download artifacts from CI pipeline...
+- task: DownloadPipelineArtifact@2
+  displayName: "--> Download CI Pipeline Artifacts <--"
+  inputs:
+    buildType: 'specific'
+    project: 'azure-pipeline-poc'
+    definition: 'john-morsley.email-ci'
+    buildVersionToDownload: 'latest'
+    artifactName: 'drop'
+    targetPath: '$(Pipeline.Workspace)/artifacts'
+
+# Show downloaded artifacts...
+- task: CmdLine@2
+  displayName: "--> Show downloaded artifacts <--"
+  inputs:
+    script: |
+      echo "Contents of artifacts directory:"
+      ls -la $(Pipeline.Workspace)/artifacts
+      echo "Contents of publish directory:"
+      ls -la $(Pipeline.Workspace)/artifacts/publish
+
+# Verify deployment package exists...
+- task: CmdLine@2
+  displayName: "--> Verify deployment package from CI pipeline <--"
+  inputs:
+    script: |
+      if [ -f "$(Pipeline.Workspace)/artifacts/publish/Morsley.UK.Email.API.zip" ]; then
+        echo "OK: Deployment package found: Morsley.UK.Email.API.zip"
+        echo "Package size: $(stat -f%z "$(Pipeline.Workspace)/artifacts/publish/Morsley.UK.Email.API.zip" 2>/dev/null || stat -c%s "$(Pipeline.Workspace)/artifacts/publish/Morsley.UK.Email.API.zip") bytes"
+        echo "Package contents:"
+        unzip -l "$(Pipeline.Workspace)/artifacts/publish/Morsley.UK.Email.API.zip" | head -20
+      else
+        echo "ERROR: Deployment package not found!"
+        echo "Available files in artifacts directory:"
+        find $(Pipeline.Workspace)/artifacts -type f -name "*.zip"
+        exit 1
+      fi
+
+# Deploy our test API to production...  
+- task: AzureWebApp@1
+  displayName: '--> Deploy to Production <--'
+  inputs: 
+    azureSubscription: '$(azureSubscription)'
+    appName: '$(appName)'
+    appType: 'webApp'
+    package: '$(Pipeline.Workspace)/artifacts/publish/Morsley.UK.Email.API.zip'
+    deploymentMethod: 'auto'

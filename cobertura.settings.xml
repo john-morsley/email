@@ -1,0 +1,18 @@
+<RunSettings>
+	<DataCollectionRunSettings>
+		<DataCollectors>
+			<DataCollector friendlyName="XPlat code coverage">
+				<Configuration>
+					<Format>cobertura</Format>
+					<Exclude>
+						[xunit.*]*
+						[*.Tests]*
+					</Exclude>
+					<ExcludeByFile>
+						**/Program.cs
+					</ExcludeByFile>
+				</Configuration>
+			</DataCollector>
+		</DataCollectors>
+	</DataCollectionRunSettings>
+</RunSettings>

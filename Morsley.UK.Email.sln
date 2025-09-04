@@ -5,6 +5,9 @@ VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		cobertura.settings.xml = cobertura.settings.xml
+		docker-compose.yaml = docker-compose.yaml
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -16,6 +19,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email", "src\Morsley.UK.Email\Morsley.UK.Email.csproj", "{7CCD4F2B-6D68-6B52-5675-3099E781D326}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email.Console", "tests\Morsley.UK.Email.Console\Morsley.UK.Email.Console.csproj", "{6BA62D4C-8280-94F1-726D-C800357F9231}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email.UnitTests", "tests\Morsley.UK.Email.UnitTests\Morsley.UK.Email.UnitTests.csproj", "{9E5139BF-3038-4F1F-B655-4A500D5C1154}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email.API", "src\Morsley.UK.Email.API\Morsley.UK.Email.API.csproj", "{FDCB02EE-4A80-F692-1201-7513926E0618}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureDevOps", "AzureDevOps", "{BB8CEC8A-6996-4B7B-AC61-B734790B56BA}"
+	ProjectSection(SolutionItems) = preProject
+		cd-pipeline.yaml = cd-pipeline.yaml
+		ci-pipeline.yaml = ci-pipeline.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email.Common", "src\Morsley.UK.Email.Common\Morsley.UK.Email.Common.csproj", "{8B2A45AB-14C0-4250-8DC2-37130D6281BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +46,18 @@ Global
 		{6BA62D4C-8280-94F1-726D-C800357F9231}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BA62D4C-8280-94F1-726D-C800357F9231}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BA62D4C-8280-94F1-726D-C800357F9231}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E5139BF-3038-4F1F-B655-4A500D5C1154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E5139BF-3038-4F1F-B655-4A500D5C1154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E5139BF-3038-4F1F-B655-4A500D5C1154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E5139BF-3038-4F1F-B655-4A500D5C1154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDCB02EE-4A80-F692-1201-7513926E0618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDCB02EE-4A80-F692-1201-7513926E0618}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDCB02EE-4A80-F692-1201-7513926E0618}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDCB02EE-4A80-F692-1201-7513926E0618}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B2A45AB-14C0-4250-8DC2-37130D6281BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B2A45AB-14C0-4250-8DC2-37130D6281BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B2A45AB-14C0-4250-8DC2-37130D6281BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B2A45AB-14C0-4250-8DC2-37130D6281BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -38,6 +65,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7CCD4F2B-6D68-6B52-5675-3099E781D326} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{6BA62D4C-8280-94F1-726D-C800357F9231} = {B648A9A0-C062-4270-8A15-2FEADAEE9F44}
+		{9E5139BF-3038-4F1F-B655-4A500D5C1154} = {B648A9A0-C062-4270-8A15-2FEADAEE9F44}
+		{FDCB02EE-4A80-F692-1201-7513926E0618} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{BB8CEC8A-6996-4B7B-AC61-B734790B56BA} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
+		{8B2A45AB-14C0-4250-8DC2-37130D6281BE} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {071D174B-0EBF-4E88-9D8B-E33D1D0BF8F3}

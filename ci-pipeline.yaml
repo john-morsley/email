@@ -1,0 +1,87 @@
+name: CI-Pipeline
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  BuildPlatform: 'Any CPU'
+  BuildConfiguration: 'Release'
+
+steps:
+
+# Show me the contents of the current directory (should be GitHub repository)...
+- task: CmdLine@2
+  displayName: "--> Show GitHub repository directory contents <--"
+  inputs:
+    script: 'dir'
+
+# Include .NET 8 SDK...
+- task: UseDotNet@2
+  displayName: "--> Include .NET 8 SDK <--"
+  inputs:
+    packageType: sdk
+    version: '8.0.x'
+
+# Double check the above has been done...
+- task: CmdLine@2
+  displayName: "--> List .NET SDKs <--"
+  inputs:
+    script: 'dotnet --list-sdks'
+
+# Build the API project...
+- task: DotNetCoreCLI@2
+  displayName: "--> Build API <--"
+  inputs:
+    command: build
+    projects: 'src/Morsley.UK.Email.API/Morsley.UK.Email.API.csproj'
+    arguments: '--configuration $(BuildConfiguration)'
+
+# Run the API unit tests...
+- task: DotNetCoreCLI@2
+  displayName: "--> Run API Unit Tests <--"
+  inputs:
+    command: test
+    projects: 'tests/Morsley.UK.Email.API.UnitTests/Morsley.UK.Email.API.UnitTests.csproj'
+    arguments: '--configuration $(BuildConfiguration) --collect:"XPlat Code Coverage" --settings cobertura.settings.xml'
+    publishTestResults: true
+
+# Debug: Show coverage files location...
+- task: CmdLine@2
+  displayName: "--> Debug: Show coverage files <--"
+  inputs:
+    script: |
+      echo "Contents of Agent.TempDirectory:"
+      find $(Agent.TempDirectory) -name "*.xml" -type f 2>/dev/null || echo "No XML files found in Agent.TempDirectory"
+      echo "Contents of current directory:"
+      find . -name "coverage*.xml" -type f 2>/dev/null || echo "No coverage XML files found in current directory"
+      echo "All XML files in TestResults:"
+      find . -path "*/TestResults/*" -name "*.xml" -type f 2>/dev/null || echo "No XML files found in TestResults"
+
+# Publish code coverage results...
+- task: PublishCodeCoverageResults@2
+  displayName: "--> Publish Code Coverage Results <--"
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+    pathToSources: '$(System.DefaultWorkingDirectory)'
+
+# Publish the API...
+- task: DotNetCoreCLI@2
+  displayName: "--> Publish the API <--"
+  inputs:
+    command: publish
+    projects: 'src/Morsley.UK.Email.API/Morsley.UK.Email.API.csproj'
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish'
+    publishWebProjects: false
+    zipAfterPublish: true
+
+# Publish pipeline artifacts for CD pipeline...
+- task: PublishPipelineArtifact@1
+  displayName: "--> Publish pipeline artifacts for CD pipeline <--"
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
+    publishLocation: 'pipeline'
