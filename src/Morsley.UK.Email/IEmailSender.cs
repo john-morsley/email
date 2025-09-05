@@ -1,4 +1,4 @@
-﻿namespace Morsley.UK.Email;
+namespace Morsley.UK.Email;
 
 public interface IEmailSender
 {

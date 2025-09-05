@@ -1,4 +1,6 @@
-﻿const int NumberOfReadAttempts = 5;
+using Morsley.UK.Email.Common.Model;
+
+const int NumberOfReadAttempts = 5;
 const int NumberOfSecondsInbetweenAttempts = 3;
 
 Console.WriteLine("Running Morsley.UK.Email.Console\n");

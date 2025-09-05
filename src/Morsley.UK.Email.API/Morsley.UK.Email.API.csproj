@@ -4,15 +4,19 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>d63e1338-9674-4cdd-b311-619c14b618cf</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.3.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Morsley.UK.Email.Common\Morsley.UK.Email.Common.csproj" />
+    <ProjectReference Include="..\Morsley.UK.Email.Persistence\Morsley.UK.Email.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

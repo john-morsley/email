@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureDevOps", "AzureDevOps"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email.Common", "src\Morsley.UK.Email.Common\Morsley.UK.Email.Common.csproj", "{8B2A45AB-14C0-4250-8DC2-37130D6281BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Morsley.UK.Email.Persistence", "src\Morsley.UK.Email.Persistence\Morsley.UK.Email.Persistence.csproj", "{4F054C52-3CC0-498E-9B9C-44C141708B47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{8B2A45AB-14C0-4250-8DC2-37130D6281BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B2A45AB-14C0-4250-8DC2-37130D6281BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B2A45AB-14C0-4250-8DC2-37130D6281BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F054C52-3CC0-498E-9B9C-44C141708B47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F054C52-3CC0-498E-9B9C-44C141708B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F054C52-3CC0-498E-9B9C-44C141708B47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F054C52-3CC0-498E-9B9C-44C141708B47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{FDCB02EE-4A80-F692-1201-7513926E0618} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{BB8CEC8A-6996-4B7B-AC61-B734790B56BA} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
 		{8B2A45AB-14C0-4250-8DC2-37130D6281BE} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{4F054C52-3CC0-498E-9B9C-44C141708B47} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {071D174B-0EBF-4E88-9D8B-E33D1D0BF8F3}

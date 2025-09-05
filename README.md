@@ -2,10 +2,49 @@
 
 A simple library to handle emails
 
+---
 
 
+## Database (ComsosDB)
 
+### Local Development
 
+To run the database locally, you will need to have Docker installed.
+
+To run the database, run the following command:
+```bash	
+docker-compose up
+```
+
+The database UI will be available at `https://localhost:8081/_explorer/index.html`
+
+---
+
+## User Secrets
+
+```json
+{
+  "ImapSettings": {
+    "Username": "",
+    "Password": ""
+  },
+  "SmtpSettings": {
+    "Username": "",
+    "Password": "",
+    "FromAddress": ""
+  },
+  "Data": {
+    "ToAddress": ""
+  },
+  "CosmosDb": {
+    "Endpoint": "https://localhost:8081",
+    "PrimaryKey": "",
+    "DatabaseName": "morsley-uk-db"
+  }
+}
+```
+
+---
 
 ## Pipleines
 

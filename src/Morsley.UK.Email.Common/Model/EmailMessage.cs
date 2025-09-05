@@ -1,7 +1,11 @@
-﻿namespace Morsley.UK.Email;
+using UUIDNext;
+
+namespace Morsley.UK.Email.Common.Model;
 
 public class EmailMessage
 {
+    public string Id { get; set; } = Uuid.NewDatabaseFriendly(Database.Other).ToString();
+
     public List<string> To { get; set; } = new();
 
     public List<string> Cc { get; set; } = new();
@@ -15,4 +19,10 @@ public class EmailMessage
     public string? TextBody { get; set; }
 
     public string? HtmlBody { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime? SentAt { get; set; }
+
+    public EmailStatus Status { get; set; } = EmailStatus.Draft;
 }
