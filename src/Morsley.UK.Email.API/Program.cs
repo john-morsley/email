@@ -3,6 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddEmailPersistence(builder.Configuration);
+builder.Services.AddEmailSender(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

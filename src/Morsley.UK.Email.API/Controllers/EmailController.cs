@@ -4,7 +4,8 @@ namespace Morsley.UK.Email.API.Controllers;
 [Route("api/email")]
 public class EmailController(
     ILogger<EmailController> logger,
-    IEmailPersistenceService persistenceService) : ControllerBase
+    IEmailPersistenceService persistenceService,
+    IEmailSender emailSender) : ControllerBase
 {
     [HttpGet("all", Name = "get-all")]
     public async Task<IActionResult> GetAll()
@@ -56,7 +57,8 @@ public class EmailController(
 
         try
         {
-            // ToDo --> Send the email using an email sender service.
+            // Send the email using the email sender service
+            await emailSender.SendAsync(email);
             
             email.Status = EmailStatus.Sent;
             email.SentAt = DateTime.UtcNow;
