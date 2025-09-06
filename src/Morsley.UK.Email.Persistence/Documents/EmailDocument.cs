@@ -1,4 +1,4 @@
-namespace Morsley.UK.Email.Persistence;
+namespace Morsley.UK.Email.Persistence.Documents;
 
 /// <summary>
 /// CosmosDB-specific document model for email persistence
@@ -18,9 +18,7 @@ public class EmailDocument
     public List<string> Cc { get; set; } = new();
 
     public List<string> Bcc { get; set; } = new();
-
-    public string? ReplyTo { get; set; }
-
+    
     public string Subject { get; set; } = "";
 
     public string? TextBody { get; set; }
@@ -37,6 +35,4 @@ public class EmailDocument
     }
 
     public DateTime? SentAt { get; set; }
-
-    public EmailStatus Status { get; set; } = EmailStatus.Draft;
 }

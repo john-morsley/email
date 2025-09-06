@@ -1,9 +1,3 @@
-using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
 namespace Morsley.UK.Email.Persistence;
 
 public static class ServiceCollectionExtensions

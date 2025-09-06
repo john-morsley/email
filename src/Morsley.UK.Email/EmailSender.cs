@@ -9,7 +9,7 @@ public class EmailSender : IEmailSender
         _options = options;
     }
 
-    public async Task SendAsync(EmailMessage message, CancellationToken token = default)
+    public async Task SendAsync(Common.Models.SendableEmailMessage message, CancellationToken token = default)
     {
         var settings = _options.CurrentValue;
         
@@ -18,7 +18,8 @@ public class EmailSender : IEmailSender
         foreach (var a in message.To) mime.To.Add(MailboxAddress.Parse(a));
         foreach (var a in message.Cc) mime.Cc.Add(MailboxAddress.Parse(a));
         foreach (var a in message.Bcc) mime.Bcc.Add(MailboxAddress.Parse(a));
-        if (!string.IsNullOrWhiteSpace(message.ReplyTo)) mime.ReplyTo.Add(MailboxAddress.Parse(message.ReplyTo));
+        //if (!string.IsNullOrWhiteSpace(message.ReplyTo)) mime.ReplyTo.Add(MailboxAddress.Parse(message.ReplyTo));
+        mime.ReplyTo.Add(MailboxAddress.Parse(settings.FromAddress));
         mime.Subject = message.Subject ?? "";
 
         var body = new BodyBuilder { TextBody = message.TextBody, HtmlBody = message.HtmlBody };

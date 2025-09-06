@@ -1,0 +1,1 @@
+﻿global using Morsley.UK.Email.Common.Enumerations;

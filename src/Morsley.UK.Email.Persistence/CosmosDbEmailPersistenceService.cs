@@ -18,34 +18,34 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         _container = cosmosClient.GetContainer(databaseName, containerName);
     }
 
-    public async Task SaveEmailAsync(EmailMessage email)
+    public async Task SaveEmailAsync(Common.Models.SentEmailMessage email)
     {
         try
         {
-            _logger.LogInformation("Saving email with ID: {EmailId}", email.Id);
+            //_logger.LogInformation("Saving email with ID: {EmailId}", email.Id);
             
             var emailDocument = email.ToDocument();
+
+
             var response = await _container.UpsertItemAsync(
                 emailDocument, 
                 new PartitionKey(emailDocument.PartitionKey));
             
-            _logger.LogInformation("Successfully saved email with ID: {EmailId}. Request charge: {RequestCharge}", 
-                email.Id, response.RequestCharge);
+            //_logger.LogInformation("Successfully saved email with ID: {EmailId}. Request charge: {RequestCharge}", email.Id, response.RequestCharge);
         }
         catch (CosmosException ex)
         {
-            _logger.LogError(ex, "Failed to save email with ID: {EmailId}. Status: {Status}, Message: {Message}", 
-                email.Id, ex.StatusCode, ex.Message);
+            //_logger.LogError(ex, "Failed to save email with ID: {EmailId}. Status: {Status}, Message: {Message}", email.Id, ex.StatusCode, ex.Message);
             throw;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error saving email with ID: {EmailId}", email.Id);
+            //_logger.LogError(ex, "Unexpected error saving email with ID: {EmailId}", email.Id);
             throw;
         }
     }
 
-    public async Task SaveEmailsAsync(IEnumerable<EmailMessage> emails)
+    public async Task SaveEmailsAsync(IEnumerable<Common.Models.SentEmailMessage> emails)
     {
         var emailList = emails.ToList();
         _logger.LogInformation("Saving {Count} emails to Cosmos DB", emailList.Count);
@@ -64,7 +64,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<EmailMessage?> GetEmailByIdAsync(string id)
+    public async Task<Common.Models.SentEmailMessage?> GetEmailByIdAsync(string id)
     {
         try
         {
@@ -81,7 +81,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
                 if (emailDocument != null)
                 {
                     _logger.LogInformation("Successfully retrieved email with ID: {EmailId}", id);
-                    return emailDocument.ToEmailMessage();
+                    return emailDocument.ToSentEmailMessage();
                 }
             }
             
@@ -101,7 +101,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<IEnumerable<EmailMessage>> GetAllEmailsAsync()
+    public async Task<IEnumerable<Common.Models.SentEmailMessage>> GetAllEmailsAsync()
     {
         try
         {
@@ -118,7 +118,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
                 emailDocuments.AddRange(response.ToList());
             }
             
-            var emails = emailDocuments.ToEmailMessages();
+            var emails = emailDocuments.ToSentEmailMessages();
             _logger.LogInformation("Successfully retrieved {Count} emails", emails.Count());
             return emails;
         }
@@ -134,7 +134,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<IEnumerable<EmailMessage>> GetEmailsByDateRangeAsync(DateTime startDate, DateTime endDate)
+    public async Task<IEnumerable<Common.Models.SentEmailMessage>> GetEmailsByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         try
         {
@@ -151,7 +151,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
                 emailDocuments.AddRange(response.ToList());
             }
             
-            var emails = emailDocuments.ToEmailMessages();
+            var emails = emailDocuments.ToSentEmailMessages();
             _logger.LogInformation("Successfully retrieved {Count} emails for date range", emails.Count());
             return emails;
         }
@@ -167,7 +167,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<IEnumerable<EmailMessage>> GetEmailsByMonthAsync(int year, int month)
+    public async Task<IEnumerable<Common.Models.SentEmailMessage>> GetEmailsByMonthAsync(int year, int month)
     {
         try
         {
@@ -189,7 +189,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
                 emailDocuments.AddRange(response.ToList());
             }
             
-            var emails = emailDocuments.ToEmailMessages();
+            var emails = emailDocuments.ToSentEmailMessages();
             _logger.LogInformation("Successfully retrieved {Count} emails for {Year}-{Month}", emails.Count(), year, month);
             return emails;
         }

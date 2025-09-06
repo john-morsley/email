@@ -1,4 +1,4 @@
-using Morsley.UK.Email.Common.Model;
+using System.Security.AccessControl;
 
 const int NumberOfReadAttempts = 5;
 const int NumberOfSecondsInbetweenAttempts = 3;
@@ -25,8 +25,18 @@ var emailBody = $"Unique: {unique}";
 
 var sender = host.Services.GetRequiredService<IEmailSender>();
 
-var message = new EmailMessage { To = [ emailTo ], Subject = emailSubject, TextBody = emailBody };
-var empty = new EmailMessage { To = [emailTo], Subject = $"Blank - {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss:fff")}", TextBody = "Nothing" };
+var message = new Morsley.UK.Email.Common.Models.SendableEmailMessage 
+{ 
+    To = [ emailTo ], 
+    Subject = emailSubject, 
+    TextBody = emailBody 
+};
+var empty = new Morsley.UK.Email.Common.Models.SendableEmailMessage 
+{ 
+    To = [emailTo], 
+    Subject = $"Blank - {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss:fff")}", 
+    TextBody = "Nothing" 
+};
 
 Console.WriteLine("============================== SENDING ==============================");
 try
