@@ -1,24 +1,25 @@
 namespace Morsley.UK.Email.Persistence;
 
-public class CosmosDbEmailPersistenceService : IEmailPersistenceService
+public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEmailPersistenceService, IReceivedEmailPersistenceService
 {
     private readonly Container _container;
     private readonly ILogger<CosmosDbEmailPersistenceService> _logger;
 
     public CosmosDbEmailPersistenceService(
         CosmosClient cosmosClient, 
-        IConfiguration configuration,
+        string databaseName,
+        string containerName,
         ILogger<CosmosDbEmailPersistenceService> logger)
     {
         _logger = logger;
         
-        var databaseName = configuration["CosmosDb:DatabaseName"] ?? "EmailDatabase";
-        var containerName = configuration["CosmosDb:ContainerName"] ?? "Emails";
+        //var databaseName = configuration["CosmosDb:DatabaseName"];
+        //var containerName = configuration["CosmosDb:SentContainerName"];
         
         _container = cosmosClient.GetContainer(databaseName, containerName);
     }
 
-    public async Task SaveEmailAsync(Common.Models.SentEmailMessage email)
+    public async Task<string> SaveEmailAsync(Common.Models.EmailMessage email, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -26,12 +27,13 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
             
             var emailDocument = email.ToDocument();
 
-
             var response = await _container.UpsertItemAsync(
                 emailDocument, 
                 new PartitionKey(emailDocument.PartitionKey));
             
             //_logger.LogInformation("Successfully saved email with ID: {EmailId}. Request charge: {RequestCharge}", email.Id, response.RequestCharge);
+            
+            return response.Resource.Id;
         }
         catch (CosmosException ex)
         {
@@ -45,17 +47,18 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task SaveEmailsAsync(IEnumerable<Common.Models.SentEmailMessage> emails)
+    public async Task<IEnumerable<string>> SaveEmailsAsync(IEnumerable<Common.Models.EmailMessage> emails, CancellationToken cancellationToken = default)
     {
         var emailList = emails.ToList();
         _logger.LogInformation("Saving {Count} emails to Cosmos DB", emailList.Count);
 
-        var tasks = emailList.Select(SaveEmailAsync);
+        var tasks = emailList.Select(email => SaveEmailAsync(email, cancellationToken));
         
         try
         {
-            await Task.WhenAll(tasks);
+            var results = await Task.WhenAll(tasks);
             _logger.LogInformation("Successfully saved all {Count} emails", emailList.Count);
+            return results;
         }
         catch (Exception ex)
         {
@@ -64,7 +67,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<Common.Models.SentEmailMessage?> GetEmailByIdAsync(string id)
+    public async Task<Common.Models.EmailMessage?> GetEmailAsync(string id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -101,7 +104,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<IEnumerable<Common.Models.SentEmailMessage>> GetAllEmailsAsync()
+    public async Task<IEnumerable<Common.Models.EmailMessage>> GetEmailsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -134,7 +137,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<IEnumerable<Common.Models.SentEmailMessage>> GetEmailsByDateRangeAsync(DateTime startDate, DateTime endDate)
+    public async Task<IEnumerable<Common.Models.EmailMessage>> GetEmailsByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         try
         {
@@ -167,7 +170,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<IEnumerable<Common.Models.SentEmailMessage>> GetEmailsByMonthAsync(int year, int month)
+    public async Task<IEnumerable<Common.Models.EmailMessage>> GetEmailsByMonthAsync(int year, int month)
     {
         try
         {
@@ -205,14 +208,14 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         }
     }
 
-    public async Task<bool> DeleteEmailAsync(string id)
+    public async Task<bool> DeleteEmailAsync(string id, CancellationToken cancellationToken = default)
     {
         try
         {
             _logger.LogInformation("Deleting email with ID: {EmailId}", id);
             
             // First, find the email to get its partition key
-            var email = await GetEmailByIdAsync(id);
+            var email = await GetEmailAsync(id, cancellationToken);
             if (email == null)
             {
                 _logger.LogWarning("Email with ID: {EmailId} not found for deletion", id);
@@ -241,6 +244,35 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error deleting email with ID: {EmailId}", id);
+            throw;
+        }
+    }
+
+    public async Task<int> DeleteEmailsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _logger.LogInformation("Deleting all emails from container");
+            
+            // Get all emails first
+            var emails = await GetEmailsAsync(cancellationToken);
+            var emailList = emails.ToList();
+            
+            int deletedCount = 0;
+            foreach (var email in emailList)
+            {
+                if (await DeleteEmailAsync(email.Id!, cancellationToken))
+                {
+                    deletedCount++;
+                }
+            }
+            
+            _logger.LogInformation("Successfully deleted {Count} emails", deletedCount);
+            return deletedCount;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error deleting all emails");
             throw;
         }
     }

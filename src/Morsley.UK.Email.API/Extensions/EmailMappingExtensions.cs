@@ -1,12 +1,10 @@
-using Morsley.UK.Email.Common.Models;
-
 namespace Morsley.UK.Email.API.Extensions;
 
 public static class EmailMappingExtensions
 {
-    public static SentEmailMessage ToSentEmailMessage(this SendableEmailMessage sendable)
+    public static EmailMessage ToEmailMessage(this SendableEmailMessage sendable)
     {
-        return new SentEmailMessage
+        return new EmailMessage
         {
             To = new List<string>(sendable.To),
             Cc = new List<string>(sendable.Cc),
@@ -17,9 +15,8 @@ public static class EmailMappingExtensions
             SentAt = DateTime.UtcNow
         };
     }
-
-    public static IEnumerable<SentEmailMessage> ToSentEmailMessages(this IEnumerable<SendableEmailMessage> sendableMessages)
+     public static IEnumerable<EmailMessage> ToEmailMessages(this IEnumerable<SendableEmailMessage> sendableMessages)
     {
-        return sendableMessages.Select(x => x.ToSentEmailMessage());
+        return sendableMessages.Select(x => x.ToEmailMessage());
     }
 }

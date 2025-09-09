@@ -2,17 +2,15 @@ namespace Morsley.UK.Email.Persistence;
 
 public interface IEmailPersistenceService
 {
-    Task SaveEmailAsync(Common.Models.SentEmailMessage email);
+    Task<string> SaveEmailAsync(Common.Models.EmailMessage email, CancellationToken cancellationToken = default);
 
-    //Task SaveEmailsAsync(IEnumerable<EmailMessage> emails);
+    Task<IEnumerable<string>> SaveEmailsAsync(IEnumerable<Common.Models.EmailMessage> emails, CancellationToken cancellationToken = default);
 
-    Task<Common.Models.SentEmailMessage?> GetEmailByIdAsync(string id);
+    Task<Common.Models.EmailMessage?> GetEmailAsync(string id, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<Common.Models.SentEmailMessage>> GetAllEmailsAsync();
+    Task<IEnumerable<Common.Models.EmailMessage>> GetEmailsAsync(CancellationToken cancellationToken = default);
 
-    //Task<IEnumerable<EmailMessage>> GetEmailsByDateRangeAsync(DateTime startDate, DateTime endDate);
+    Task<bool> DeleteEmailAsync(string id, CancellationToken cancellationToken = default);
 
-    //Task<IEnumerable<EmailMessage>> GetEmailsByMonthAsync(int year, int month);
-
-    Task<bool> DeleteEmailAsync(string id);    
+    Task<int> DeleteEmailsAsync(CancellationToken cancellationToken = default);
 }

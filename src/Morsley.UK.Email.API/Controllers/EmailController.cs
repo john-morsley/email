@@ -1,3 +1,5 @@
+using Morsley.UK.Email.Persistence;
+
 namespace Morsley.UK.Email.API.Controllers;
 
 [ApiController]
@@ -6,7 +8,8 @@ public class EmailController(
     ILogger<EmailController> logger,
     IEmailReader emailReader,
     IEmailSender emailSender,
-    IEmailPersistenceService persistenceService) : ControllerBase
+    IReceivedEmailPersistenceService receivedEmailPersistenceService,
+    ISentEmailPersistenceService sentEmailPersistenceService) : ControllerBase
 {
     [HttpGet("all", Name = "get-all")]
     public async Task<IActionResult> GetAll()
@@ -15,11 +18,11 @@ public class EmailController(
 
         try
         {
-            await GetAllAndPersist();
+            var emails = await GetAllAndPersist();
 
             // ToDo --> Read emails from an email reader service.
-            var emails = await persistenceService.GetAllEmailsAsync();
-            
+            //var emails = await persistenceService.GetAllEmailsAsync();
+
             logger.LogInformation("Retrieved {Count} emails", emails.Count());
             return Ok(emails);
         }
@@ -30,40 +33,39 @@ public class EmailController(
         }
     }
 
-    [HttpGet("{id}", Name = "get-by-id")]
-    public async Task<IActionResult> GetById(string id)
-    {
-        if (string.IsNullOrWhiteSpace(id))
-        {
-            return BadRequest("Email ID cannot be null or empty");
-        }
+    //[HttpGet("{id}", Name = "get-by-id")]
+    //public async Task<IActionResult> GetById(string id)
+    //{
+    //    if (string.IsNullOrWhiteSpace(id))
+    //    {
+    //        return BadRequest("Email ID cannot be null or empty");
+    //    }
 
-        logger.LogInformation("Getting email with ID: {EmailId}", id);
+    //    logger.LogInformation("Getting email with ID: {EmailId}", id);
 
-        try
-        {
-            var email = await persistenceService.GetEmailByIdAsync(id);
-            
-            if (email == null)
-            {
-                return NotFound($"Email with ID {id} not found");
-            }
-            
-            return Ok(email);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error retrieving email with ID: {EmailId}", id);
-            return StatusCode(500, "An error occurred while retrieving the email");
-        }
-    }
+    //    try
+    //    {
+    //        var email = await persistenceService.GetEmailByIdAsync(id);
+
+    //        if (email == null)
+    //        {
+    //            return NotFound($"Email with ID {id} not found");
+    //        }
+
+    //        return Ok(email);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        logger.LogError(ex, "Error retrieving email with ID: {EmailId}", id);
+    //        return StatusCode(500, "An error occurred while retrieving the email");
+    //    }
+    //}
 
     [HttpPost(Name = "send")]
-    public async Task<IActionResult> Send([FromBody] Common.Models.SendableEmailMessage sendable)
+    public async Task<IActionResult> Send([FromBody] SendableEmailMessage sendable)
     {
         logger.LogInformation("Sending email with subject: {Subject}", sendable.Subject);
 
-        // Model validation (Data Annotations)
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -71,67 +73,74 @@ public class EmailController(
 
         try
         {
-            await emailSender.SendAsync(sendable);
+            var message = sendable.ToEmailMessage();
+
+            await emailSender.SendAsync(message);
             
-            var sent = sendable.ToSentEmailMessage();
+            var sent = sendable.ToEmailMessage();
 
             sent.SentAt = DateTime.UtcNow;
             
-            await persistenceService.SaveEmailAsync(sent);
+            var createdId = await sentEmailPersistenceService.SaveEmailAsync(sent);
 
-            //logger.LogInformation("Email sent and saved with ID: {EmailId}", email.Id);
-            return Ok(); // (new { Id = email.Id, Status = "Sent" });
+            logger.LogInformation("Email sent and saved with ID: {EmailId}", createdId);
+            return Created($"api/email/{createdId}", new { id = createdId });
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error sending email");
-            //email.Status = EmailStatus.Failed;
-            //await persistenceService.SaveEmailAsync(email);
             return StatusCode(500, "An error occurred while sending the email");
         }
     }
 
-    [HttpDelete("{id}", Name = "delete-by-id")]
-    public async Task<IActionResult> DeleteById(string id)
-    {
-        logger.LogInformation("Deleting email with ID: {EmailId}", id);
+    //[HttpDelete("{id}", Name = "delete-by-id")]
+    //public async Task<IActionResult> DeleteById(string id)
+    //{
+    //    logger.LogInformation("Deleting email with ID: {EmailId}", id);
 
-        try
-        {
-            var deleted = await persistenceService.DeleteEmailAsync(id);
+    //    try
+    //    {
+    //        var deleted = await persistenceService.DeleteEmailAsync(id);
             
-            if (!deleted)
-            {
-                return NotFound($"Email with ID {id} not found");
-            }
+    //        if (!deleted)
+    //        {
+    //            return NotFound($"Email with ID {id} not found");
+    //        }
             
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error deleting email with ID: {EmailId}", id);
-            return StatusCode(500, "An error occurred while deleting the email");
-        }
-    }
+    //        return NoContent();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        logger.LogError(ex, "Error deleting email with ID: {EmailId}", id);
+    //        return StatusCode(500, "An error occurred while deleting the email");
+    //    }
+    //}
 
-    private async Task GetAllAndPersist()
+    private async Task<IEnumerable<Common.Models.EmailMessage>> GetAllAndPersist()
     {
         var emails = await emailReader.FetchAsync();
 
+        var batchNumber = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+
         foreach (var email in emails)
         {
-            await PersistEmail(email);
+            await PersistEmail(email, batchNumber);
         }
+
+        var receivedEmails = await receivedEmailPersistenceService.GetEmailsAsync();
+
+        return receivedEmails;
     }
 
-    private async Task PersistEmail(Common.Models.SentEmailMessage email)
+    private async Task PersistEmail(Common.Models.EmailMessage email)
     {
-        await persistenceService.SaveEmailAsync(email);
+        await receivedEmailPersistenceService.SaveEmailAsync(email);
     }
 
-    private async Task PersistEmail(MimeKit.MimeMessage email)
+    private async Task PersistEmail(MimeKit.MimeMessage message, long batchNumber)
     {
-        var sentEmail = email.ToSentEmailMessage();
+        var email = message.ToSentEmailMessage();
+        email.BatchNumber = batchNumber;
         await PersistEmail(email);
     }
 }

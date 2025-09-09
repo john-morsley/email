@@ -1,0 +1,14 @@
+global using Docker.DotNet;
+global using Docker.DotNet.Models;
+global using Microsoft.AspNetCore.Hosting;
+global using Microsoft.AspNetCore.Mvc.Testing;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using Morsley.UK.Email.API;
+global using Morsley.UK.Email.API.Models;
+global using Morsley.UK.Email.Common.Models;
+global using Morsley.UK.Email.Persistence;
+global using System.Net.Http;
+global using System.Text;
+global using System.Text.Json;

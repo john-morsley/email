@@ -43,3 +43,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+// Make the implicit Program class public for integration testing
+public partial class Program { }

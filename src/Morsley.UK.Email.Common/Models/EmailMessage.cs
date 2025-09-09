@@ -1,6 +1,6 @@
 namespace Morsley.UK.Email.Common.Models;
 
-public class SentEmailMessage
+public class EmailMessage
 {
     public string? Id { get; set; }
 
@@ -17,4 +17,6 @@ public class SentEmailMessage
     public string? HtmlBody { get; set; }
 
     public DateTime? SentAt { get; set; }
+
+    public long? BatchNumber { get; set; }
 }

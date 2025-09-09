@@ -35,4 +35,6 @@ public class EmailDocument
     }
 
     public DateTime? SentAt { get; set; }
+
+    public long? BatchNumber { get; set; }
 }

@@ -1,5 +1,10 @@
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.OpenApi.Models;
+global using MimeKit;
 global using Morsley.UK.Email;
 global using Morsley.UK.Email.API.Extensions;
+global using Morsley.UK.Email.Common.Attributes;
+global using Morsley.UK.Email.Common.Models;
+global using Morsley.UK.Email.API.Models;
 global using Morsley.UK.Email.Persistence;
+global using System.ComponentModel.DataAnnotations;

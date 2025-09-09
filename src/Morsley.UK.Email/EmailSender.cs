@@ -9,7 +9,7 @@ public class EmailSender : IEmailSender
         _options = options;
     }
 
-    public async Task SendAsync(Common.Models.SendableEmailMessage message, CancellationToken token = default)
+    public async Task SendAsync(Common.Models.EmailMessage message, CancellationToken token = default)
     {
         var settings = _options.CurrentValue;
         

@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 
 namespace Morsley.UK.Email.Common.Attributes;
 

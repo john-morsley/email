@@ -4,19 +4,15 @@ A simple library to handle emails
 
 ---
 
-
 ## Database (ComsosDB)
 
 ### Local Development
 
-To run the database locally, you will need to have Docker installed.
-
-To run the database, run the following command:
-```bash	
-docker-compose up
-```
+To run the database locally, you will need to have Azure Cosmos DB Emulator installed.
 
 The database UI will be available at `https://localhost:8081/_explorer/index.html`
+
+You can either ignore the security warning, or you can download the certificate from the UI and install it in your browser.
 
 ---
 

@@ -1,13 +1,11 @@
-using MimeKit;
-using Morsley.UK.Email.Common.Models;
 
 namespace Morsley.UK.Email.API.Extensions;
 
 public static class MimeMessageExtensions
 {
-    public static SentEmailMessage ToSentEmailMessage(this MimeMessage mimeMessage)
+    public static EmailMessage ToSentEmailMessage(this MimeMessage mimeMessage)
     {
-        var sentEmail = new SentEmailMessage
+        var sentEmail = new EmailMessage
         {
             Subject = mimeMessage.Subject ?? string.Empty,
             SentAt = mimeMessage.Date.DateTime != DateTime.MinValue ? mimeMessage.Date.DateTime : DateTime.UtcNow
@@ -69,7 +67,7 @@ public static class MimeMessageExtensions
         return sentEmail;
     }
 
-    public static IEnumerable<SentEmailMessage> ToSentEmailMessages(this IEnumerable<MimeMessage> mimeMessages)
+    public static IEnumerable<EmailMessage> ToSentEmailMessages(this IEnumerable<MimeMessage> mimeMessages)
     {
         return mimeMessages.Select(x => x.ToSentEmailMessage());
     }
