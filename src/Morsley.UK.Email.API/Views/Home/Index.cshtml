@@ -5,4 +5,16 @@
 <div class="text-center">
     <h1 class="display-4">Welcome to the Email API</h1>
     <p>Test API Swagger: <a href="/swagger">Swagger</a></p>
+    @if (!string.IsNullOrEmpty(ViewBag.TestSecret))
+    {
+        <div class="alert alert-success">
+            <strong>Test KeyVault Secret Value:</strong> @ViewBag.TestSecret
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Secret not found or empty
+        </div>
+    }
 </div>

@@ -42,6 +42,26 @@ You can either ignore the security warning, or you can download the certificate 
 
 ---
 
+## Azure Key Vault
+
+### Local Development
+
+Download and install Azure CLI: https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
+
+Once installed, try
+
+```PowerShell
+az login
+```
+
+Adding these:
+
+AZURE_CLIENT_ID=your-client-id
+AZURE_CLIENT_SECRET=your-client-secret  
+AZURE_TENANT_ID=your-tenant-id
+
+---
+
 ## Pipleines
 
 CI
