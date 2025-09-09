@@ -1,5 +1,3 @@
-using Morsley.UK.Email.Persistence;
-
 namespace Morsley.UK.Email.API.Controllers;
 
 [ApiController]
@@ -11,7 +9,8 @@ public class EmailController(
     IReceivedEmailPersistenceService receivedEmailPersistenceService,
     ISentEmailPersistenceService sentEmailPersistenceService) : ControllerBase
 {
-    [HttpGet("all", Name = "get-all")]
+    // ToDo --> Pagination
+    [HttpGet("all", Name = "all")]
     public async Task<IActionResult> GetAll()
     {
         logger.LogInformation("Getting all emails");

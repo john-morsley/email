@@ -84,9 +84,6 @@ public static class ServiceCollectionExtensions
                 logger);
         });
 
-        // Keep backward compatibility - register as sent emails by default
-        //services.AddScoped<IEmailPersistenceService>(serviceProvider => serviceProvider.GetRequiredService<ISentEmailPersistenceService>());
-
         return services;
     }
 
