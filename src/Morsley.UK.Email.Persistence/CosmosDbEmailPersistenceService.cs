@@ -137,6 +137,63 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
         }
     }
 
+    public async Task<Common.Models.PaginatedResponse<Common.Models.EmailMessage>> GetEmailsAsync(Common.Models.PaginationRequest pagination, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _logger.LogInformation("Retrieving emails with pagination - Page: {Page}, PageSize: {PageSize}", pagination.Page, pagination.PageSize);
+            
+            // First, get the total count
+            var countQuery = _container.GetItemQueryIterator<int>(
+                "SELECT VALUE COUNT(1) FROM c");
+            
+            int totalCount = 0;
+            while (countQuery.HasMoreResults)
+            {
+                var countResponse = await countQuery.ReadNextAsync();
+                totalCount = countResponse.FirstOrDefault();
+                break;
+            }
+            
+            // Then get the paginated results
+            var query = _container.GetItemQueryIterator<EmailDocument>(
+                $"SELECT * FROM c ORDER BY c.CreatedAt DESC OFFSET {pagination.Skip} LIMIT {pagination.PageSize}");
+            
+            var emailDocuments = new List<EmailDocument>();
+            
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync();
+                emailDocuments.AddRange(response.ToList());
+            }
+            
+            var emails = emailDocuments.ToSentEmailMessages();
+            
+            var paginatedResponse = new Common.Models.PaginatedResponse<Common.Models.EmailMessage>
+            {
+                Items = emails,
+                Page = pagination.Page,
+                PageSize = pagination.PageSize,
+                TotalItems = totalCount
+            };
+            
+            _logger.LogInformation("Successfully retrieved {Count} emails (Page {Page}/{TotalPages})", 
+                emails.Count(), paginatedResponse.Page, paginatedResponse.TotalPages);
+            
+            return paginatedResponse;
+        }
+        catch (CosmosException ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve paginated emails. Status: {Status}", ex.StatusCode);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error retrieving paginated emails");
+            throw;
+        }
+    }
+
     public async Task<IEnumerable<Common.Models.EmailMessage>> GetEmailsByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         try

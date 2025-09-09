@@ -9,21 +9,31 @@ public class EmailController(
     IReceivedEmailPersistenceService receivedEmailPersistenceService,
     ISentEmailPersistenceService sentEmailPersistenceService) : ControllerBase
 {
-    // ToDo --> Pagination
     [HttpGet("all", Name = "all")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] Common.Models.PaginationRequest? pagination = null)
     {
-        logger.LogInformation("Getting all emails");
+        // Use default pagination if not provided
+        pagination ??= new Common.Models.PaginationRequest();
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        logger.LogInformation("Getting emails with pagination - Page: {Page}, PageSize: {PageSize}", pagination.Page, pagination.PageSize);
 
         try
         {
-            var emails = await GetAllAndPersist();
+            // First ensure we have the latest emails persisted
+            await GetAllAndPersist();
 
-            // ToDo --> Read emails from an email reader service.
-            //var emails = await persistenceService.GetAllEmailsAsync();
+            // Get paginated emails from persistence
+            var paginatedEmails = await receivedEmailPersistenceService.GetEmailsAsync(pagination);
 
-            logger.LogInformation("Retrieved {Count} emails", emails.Count());
-            return Ok(emails);
+            logger.LogInformation("Retrieved {Count} emails (Page {Page}/{TotalPages})", 
+                paginatedEmails.Count, paginatedEmails.Page, paginatedEmails.TotalPages);
+            
+            return Ok(paginatedEmails);
         }
         catch (Exception ex)
         {
