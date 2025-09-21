@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Morsley.UK.Email.Common\Morsley.UK.Email.Common.csproj" />
     <ProjectReference Include="..\Morsley.UK.Email.Persistence\Morsley.UK.Email.Persistence.csproj" />
     <ProjectReference Include="..\Morsley.UK.Email\Morsley.UK.Email.csproj" />
+    <ProjectReference Include="..\Morsley.UK.Email.Secrets\Morsley.UK.Email.Secrets.csproj" />
   </ItemGroup>
 
 </Project>

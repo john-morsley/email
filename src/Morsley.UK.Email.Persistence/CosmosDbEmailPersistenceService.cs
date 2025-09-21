@@ -1,3 +1,5 @@
+using Microsoft.Azure.Documents;
+
 namespace Morsley.UK.Email.Persistence;
 
 public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEmailPersistenceService, IReceivedEmailPersistenceService
@@ -29,7 +31,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
 
             var response = await _container.UpsertItemAsync(
                 emailDocument, 
-                new PartitionKey(emailDocument.PartitionKey));
+                new Microsoft.Azure.Cosmos.PartitionKey(emailDocument.PartitionKey));
             
             //_logger.LogInformation("Successfully saved email with ID: {EmailId}. Request charge: {RequestCharge}", email.Id, response.RequestCharge);
             
@@ -238,7 +240,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
                 "SELECT * FROM c ORDER BY c.CreatedAt DESC",
                 requestOptions: new QueryRequestOptions
                 {
-                    PartitionKey = new PartitionKey(partitionKey)
+                    PartitionKey = new Microsoft.Azure.Cosmos.PartitionKey(partitionKey)
                 });
             
             var emailDocuments = new List<EmailDocument>();
@@ -282,7 +284,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
             var emailDocument = email.ToDocument();
             await _container.DeleteItemAsync<EmailDocument>(
                 id, 
-                new PartitionKey(emailDocument.PartitionKey));
+                new Microsoft.Azure.Cosmos.PartitionKey(emailDocument.PartitionKey));
             
             _logger.LogInformation("Successfully deleted email with ID: {EmailId}", id);
             return true;

@@ -1,11 +1,12 @@
-﻿@{
+@{
     ViewData["Title"] = "Email Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome to the Email API</h1>
     <p>Test API Swagger: <a href="/swagger">Swagger</a></p>
-    @if (!string.IsNullOrEmpty(ViewBag.TestSecret))
+
+@*     @if (!string.IsNullOrEmpty(ViewBag.TestSecret))
     {
         <div class="alert alert-success">
             <strong>Test KeyVault Secret Value:</strong> @ViewBag.TestSecret
@@ -17,4 +18,31 @@
             Secret not found or empty
         </div>
     }
+ *@
+
+    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Test Secret", Value = ViewBag.TestSecret, Mask = false }' />
+    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Morsley UK Cosmos DB Primary Read/Write Key", Value = ViewBag.MorsleyUkCosmosDbPrimaryReadWriteKey }' />
+    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Morsley UK Cosmos DB Secondary Read/Write Key", Value = ViewBag.MorsleyUkCosmosDbSecondaryReadWriteKey }' />
+    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Morsley UK Cosmos DB Primary Read Key", Value = ViewBag.MorsleyUkCosmosDbPrimaryReadKey }' />
+    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Morsley UK Cosmos DB Secondary Read Key", Value = ViewBag.MorsleyUkCosmosDbSecondaryReadKey }' />
+
 </div>
+
+
+
+
+
+
+@* <div class="alert alert-dark">
+    <strong>CosmosDbPrimaryReadWriteKey Value:</strong> @ViewBag.
+</div>
+<div class="alert alert-dark">
+    <strong>CosmosDbSecondaryReadWriteKey Value:</strong> @ViewBag.CosmosDbSecondaryReadWriteKey
+</div>
+<div class="alert alert-dark">
+    <strong>CosmosDbPrimaryReadKey Value:</strong> @ViewBag.CosmosDbPrimaryReadKey
+</div>
+<div class="alert alert-dark">
+    <strong>CosmosDbSecondaryReadKey Value:</strong> @ViewBag.CosmosDbSecondaryReadKey
+</div>
+ *@
