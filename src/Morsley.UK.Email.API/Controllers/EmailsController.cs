@@ -5,9 +5,7 @@ namespace Morsley.UK.Email.API.Controllers;
 public class EmailsController(
     ILogger<EmailsController> logger,
     IEmailReader emailReader,
-    IEmailSender emailSender,
-    IReceivedEmailPersistenceService receivedEmailPersistenceService,
-    ISentEmailPersistenceService sentEmailPersistenceService) : ControllerBase
+    IReceivedEmailPersistenceService receivedEmailPersistenceService) : ControllerBase
 {
     [HttpGet("all", Name = "all")]
     public async Task<IActionResult> GetAll([FromQuery] Common.Models.PaginationRequest? pagination = null)

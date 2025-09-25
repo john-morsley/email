@@ -34,7 +34,7 @@ You can either ignore the security warning, or you can download the certificate 
   },
   "CosmosDb": {
     "Endpoint": "https://localhost:8081",
-    "PrimaryKey": "",
+    "Key": "",
     "DatabaseName": "morsley-uk-db"
   }
 }

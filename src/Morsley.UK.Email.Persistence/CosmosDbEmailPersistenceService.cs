@@ -1,5 +1,3 @@
-using Microsoft.Azure.Documents;
-
 namespace Morsley.UK.Email.Persistence;
 
 public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEmailPersistenceService, IReceivedEmailPersistenceService
@@ -13,11 +11,7 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
         string containerName,
         ILogger<CosmosDbEmailPersistenceService> logger)
     {
-        _logger = logger;
-        
-        //var databaseName = configuration["CosmosDb:DatabaseName"];
-        //var containerName = configuration["CosmosDb:SentContainerName"];
-        
+        _logger = logger;               
         _container = cosmosClient.GetContainer(databaseName, containerName);
     }
 
@@ -39,12 +33,12 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
         }
         catch (CosmosException ex)
         {
-            //_logger.LogError(ex, "Failed to save email with ID: {EmailId}. Status: {Status}, Message: {Message}", email.Id, ex.StatusCode, ex.Message);
+            _logger.LogError(ex, "Failed to save email: Status: {Status}, Message: {Message}", ex.StatusCode, ex.Message);
             throw;
         }
         catch (Exception ex)
         {
-            //_logger.LogError(ex, "Unexpected error saving email with ID: {EmailId}", email.Id);
+            _logger.LogError(ex, "Unexpected error saving email");
             throw;
         }
     }
@@ -113,7 +107,11 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
             _logger.LogInformation("Retrieving all emails from Cosmos DB");
             
             var query = _container.GetItemQueryIterator<EmailDocument>(
-                "SELECT * FROM c ORDER BY c.CreatedAt DESC");
+                """                
+                  SELECT * 
+                    FROM c 
+                ORDER BY c.CreatedAt DESC                
+                """);
             
             var emailDocuments = new List<EmailDocument>();
             
@@ -158,9 +156,14 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
             }
             
             // Then get the paginated results
-            var query = _container.GetItemQueryIterator<EmailDocument>(
-                $"SELECT * FROM c ORDER BY c.CreatedAt DESC OFFSET {pagination.Skip} LIMIT {pagination.PageSize}");
-            
+            var queryText = $"SELECT * " +
+                            "FROM c " +
+                            "ORDER BY c.CreatedAt DESC " +
+                            $"OFFSET {pagination.Skip} " +
+                            $"LIMIT {pagination.PageSize}";
+
+            var query = _container.GetItemQueryIterator<EmailDocument>(queryText);
+                            
             var emailDocuments = new List<EmailDocument>();
             
             while (query.HasMoreResults)
@@ -202,8 +205,14 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
         {
             _logger.LogInformation("Retrieving emails from {StartDate} to {EndDate}", startDate, endDate);
             
-            var query = _container.GetItemQueryIterator<EmailDocument>(
-                $"SELECT * FROM c WHERE c.CreatedAt >= '{startDate:yyyy-MM-ddTHH:mm:ssZ}' AND c.CreatedAt <= '{endDate:yyyy-MM-ddTHH:mm:ssZ}' ORDER BY c.CreatedAt DESC");
+            var queryText =
+                $"SELECT * " +
+                "FROM c " +
+                $"WHERE c.CreatedAt >= '{startDate:yyyy-MM-ddTHH:mm:ssZ}' " +
+                $"AND c.CreatedAt <= '{endDate:yyyy-MM-ddTHH:mm:ssZ}' " +
+                "ORDER BY c.CreatedAt DESC";
+
+            var query = _container.GetItemQueryIterator<EmailDocument>(queryText);
             
             var emailDocuments = new List<EmailDocument>();
             
@@ -237,7 +246,11 @@ public class CosmosDbEmailPersistenceService : IEmailPersistenceService, ISentEm
             _logger.LogInformation("Retrieving emails for partition key: {PartitionKey}", partitionKey);
             
             var query = _container.GetItemQueryIterator<EmailDocument>(
-                "SELECT * FROM c ORDER BY c.CreatedAt DESC",
+                """                
+                  SELECT * 
+                    FROM c 
+                ORDER BY c.CreatedAt DESC                
+                """,
                 requestOptions: new QueryRequestOptions
                 {
                     PartitionKey = new Microsoft.Azure.Cosmos.PartitionKey(partitionKey)

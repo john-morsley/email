@@ -4,9 +4,7 @@ namespace Morsley.UK.Email.API.Controllers;
 [Route("api/email")]
 public class EmailController(
     ILogger<EmailController> logger,
-    IEmailReader emailReader,
     IEmailSender emailSender,
-    IReceivedEmailPersistenceService receivedEmailPersistenceService,
     ISentEmailPersistenceService sentEmailPersistenceService) : ControllerBase
 {
     //[HttpGet("{id}", Name = "get-by-id")]
@@ -60,6 +58,7 @@ public class EmailController(
             var createdId = await sentEmailPersistenceService.SaveEmailAsync(sent);
 
             logger.LogInformation("Email sent and saved with ID: {EmailId}", createdId);
+
             return Created($"api/email/{createdId}", new { id = createdId });
         }
         catch (Exception ex)

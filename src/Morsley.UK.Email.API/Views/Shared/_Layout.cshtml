@@ -1,6 +1,10 @@
 ﻿@{
     var isHome = string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), "Home", StringComparison.OrdinalIgnoreCase) && 
                  string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), "Index", StringComparison.OrdinalIgnoreCase);
+
+    var isSwagger = string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), "Home", StringComparison.OrdinalIgnoreCase) && 
+                    string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), "Swagger", StringComparison.OrdinalIgnoreCase);
+
 }
 
 <!DOCTYPE html>
@@ -35,6 +39,16 @@
                             else
                             {
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            }
+                            </li>
+                            <li class="nav-item">
+                            @if (isSwagger)
+                            {
+                                <span class="nav-link text-dark disabled" aria-disabled="true">Swagger</span>
+                            }
+                            else
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Swagger">Swagger</a>
                             }
                             </li>
                         </ul>

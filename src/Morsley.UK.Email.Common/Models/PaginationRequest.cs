@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Morsley.UK.Email.Common.Models;
 
 public class PaginationRequest

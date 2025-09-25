@@ -1,8 +1,3 @@
- using Azure.Extensions.AspNetCore.Configuration.Secrets;
- using Azure.Identity;
- using Microsoft.AspNetCore.Builder;
- using Microsoft.Extensions.Configuration;
- 
 namespace Morsley.UK.Email.Secrets;
 
 public static class ServiceCollectionExtensions

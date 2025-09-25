@@ -52,20 +52,13 @@ public class EmailControllerIntegrationTests
     [Test]
     // Given: We have a valid email
     //  When: That email is sent with the API /api/send (POST)
-    //   And: We get that email with the API /api/get-all (GET)
-    //  Then: The email should send successfully
-    //   And: The email should be read successfully
+    //  Then: The email should be sent successfully
     //   And: There should be a copy of the sent email in the database
-    //   And: There should be a copy of the received email in the database
-    //  Note: I understand we are doing 2 things here and not the usual 1,
-    //        but it's the best way I can see to get a complete round trip tested.  
-    public async Task Send_And_Get_Email()
+    public async Task Send_Email()
     {
-        // Send the email...
-
         // Arrange
         var fullDateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
-        var subject = $"Integration Test Email - {fullDateTime}";
+        var subject = $"Morsley.UK.Email.IntegrationTests Email - {fullDateTime}";
         var body = $"This is a test email from integration tests. ({fullDateTime})";
 
         var sendableEmail = new SendableEmailMessage
@@ -81,7 +74,67 @@ public class EmailControllerIntegrationTests
         });
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        Console.WriteLine("Act 1... GET /api/email");
+        Console.WriteLine("Act 1... POST /api/email");
+
+        // Act
+        var sendResponse = await _client.PostAsync("/api/email", content);
+
+        // Assert
+        sendResponse.ShouldNotBeNull();
+        sendResponse.EnsureSuccessStatusCode();
+        sendResponse.StatusCode.ShouldBe(System.Net.HttpStatusCode.Created);
+
+        var sendResponseContent = await sendResponse.Content.ReadAsStringAsync();
+        Console.WriteLine($"POST /api/email response: {sendResponseContent}");
+        var sendResponseObject = JsonSerializer.Deserialize<JsonElement>(sendResponseContent);
+
+        sendResponseObject.TryGetProperty("id", out var sendIdProperty).ShouldBeTrue();
+        var sendEmailId = sendIdProperty.GetString();
+        sendEmailId.ShouldNotBeNullOrEmpty();
+
+        // Verify Location header is set
+        sendResponse.Headers.Location.ShouldNotBeNull();
+        sendResponse.Headers.Location.ToString().ShouldContain("api/email/");
+
+        // Verify the email was persisted in the database
+        var sentEmail = sendableEmail.ToEmailMessage();
+        sentEmail.Id = sendEmailId;
+        await VerifySentEmailPersistedInDatabase(sentEmail, subject, body);
+    }
+
+    [Test]
+    // Given: We have a valid email
+    //  When: That email is sent with the API /api/send (POST)
+    //   And: We get that email with the API /api/get-all (GET)
+    //  Then: The email should send successfully
+    //   And: The email should be read successfully
+    //   And: There should be a copy of the sent email in the database
+    //   And: There should be a copy of the received email in the database
+    //  Note: I understand we are doing 2 things here and not the usual 1,
+    //        but it's the best way I can see to get a complete round trip tested.  
+    public async Task Send_And_Read_Email()
+    {
+        // Send the email...
+
+        // Arrange
+        var fullDateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
+        var subject = $"Morsley.UK.Email.IntegrationTests Email - {fullDateTime}";
+        var body = $"This is a test email from integration tests. ({fullDateTime})";
+
+        var sendableEmail = new SendableEmailMessage
+        {
+            To = new List<string> { _testSettings.TestEmailAddress },
+            Subject = subject,
+            TextBody = body
+        };
+
+        var json = JsonSerializer.Serialize(sendableEmail, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        Console.WriteLine("Act 1... POST /api/email");
 
         // Act 1
         var sendResponse = await _client.PostAsync("/api/email", content);
@@ -129,10 +182,10 @@ public class EmailControllerIntegrationTests
             // Assert 2
             retrieveResponse.ShouldNotBeNull();
             retrieveResponse.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
-        
+
             var retrieveResponseContent = await retrieveResponse.Content.ReadAsStringAsync();
             Console.WriteLine($"GET /api/email/all response: {retrieveResponseContent}");
-        
+
             var receivedEmails = JsonSerializer.Deserialize<List<Common.Models.EmailMessage>>(retrieveResponseContent, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase

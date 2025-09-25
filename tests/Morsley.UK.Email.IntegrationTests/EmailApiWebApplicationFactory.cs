@@ -23,6 +23,7 @@ public class EmailApiWebApplicationFactory : WebApplicationFactory<Program>
             var services = new ServiceCollection();
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Test.json"))
+                .AddUserSecrets<EmailApiWebApplicationFactory>()
                 .Build();
             
             services.AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Information));

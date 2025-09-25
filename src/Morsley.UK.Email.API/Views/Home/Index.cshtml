@@ -1,48 +1,29 @@
 @{
-    ViewData["Title"] = "Email Home Page";
+    ViewData["Title"] = "Morsley UK Email API";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome to the Email API</h1>
-    <p>Test API Swagger: <a href="/swagger">Swagger</a></p>
 
-@*     @if (!string.IsNullOrEmpty(ViewBag.TestSecret))
+    <h1 class="display-4">Morsley UK Email API</h1>
+
+    @* <p>Test API Swagger: <a href="/swagger">Swagger</a></p> *@    
+
+    @if (ViewBag.IsKeyVaultHealthy)
     {
-        <div class="alert alert-success">
-            <strong>Test KeyVault Secret Value:</strong> @ViewBag.TestSecret
-        </div>
+        <partial name="_DisplayMessage" model='new DisplayMessage { Message = "Key Vault connection OK", Type = MessageType.Good, Details = ViewBag.KeyVaultDetails }' />
     }
     else
     {
-        <div class="alert alert-warning">
-            Secret not found or empty
-        </div>
+        <partial name="_DisplayMessage" model='new DisplayMessage { Message = "There appears to be a Key Vault issue", Type = MessageType.Bad }' />
     }
- *@
 
-    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Test Secret", Value = ViewBag.TestSecret, Mask = false }' />
-    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Morsley UK Cosmos DB Primary Read/Write Key", Value = ViewBag.MorsleyUkCosmosDbPrimaryReadWriteKey }' />
-    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Morsley UK Cosmos DB Secondary Read/Write Key", Value = ViewBag.MorsleyUkCosmosDbSecondaryReadWriteKey }' />
-    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Morsley UK Cosmos DB Primary Read Key", Value = ViewBag.MorsleyUkCosmosDbPrimaryReadKey }' />
-    <partial name="_DisplaySecret" model='new DisplaySecret { Comment = "Key Vault: Morsley UK Cosmos DB Secondary Read Key", Value = ViewBag.MorsleyUkCosmosDbSecondaryReadKey }' />
+    @if (ViewBag.IsCosmosDbHealthy)
+    {
+        <partial name="_DisplayMessage" model='new DisplayMessage { Message = "Cosmos DB connection OK", Type = MessageType.Good, Details = ViewBag.CosmosDbDetails }' />
+    }
+    else
+    {
+        <partial name="_DisplayMessage" model='new DisplayMessage { Message = "Cosmos DB connection FAILED", Type = MessageType.Bad }' />
+    }
 
 </div>
-
-
-
-
-
-
-@* <div class="alert alert-dark">
-    <strong>CosmosDbPrimaryReadWriteKey Value:</strong> @ViewBag.
-</div>
-<div class="alert alert-dark">
-    <strong>CosmosDbSecondaryReadWriteKey Value:</strong> @ViewBag.CosmosDbSecondaryReadWriteKey
-</div>
-<div class="alert alert-dark">
-    <strong>CosmosDbPrimaryReadKey Value:</strong> @ViewBag.CosmosDbPrimaryReadKey
-</div>
-<div class="alert alert-dark">
-    <strong>CosmosDbSecondaryReadKey Value:</strong> @ViewBag.CosmosDbSecondaryReadKey
-</div>
- *@
