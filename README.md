@@ -67,19 +67,25 @@ AZURE_TENANT_ID=your-tenant-id
 CI
 --
 
-When added to Azure DevOps, should be renamed 'ci'.
+When added to Azure DevOps, should be renamed 'Morsley-UK.Email.CI'.
 
 CD
 --
 
-When added to Azure DevOps, should be renamed 'cd'.
-It requires the details of the Azure Subscription to be added to Azure DevOps.
+When added to Azure DevOps, should be renamed 'Morsley-UK.Email.CD'.
 
-When added to Azure DevOps, should be renamed 'cd'.
+It requires the details of the Azure Subscription to be added to Azure DevOps.
 
 For the deployment task to work, there needs to be an Azure Web App ready.
 
 It also requires the details of the Azure Subscription to be added to Azure DevOps: morsley-uk-email
 
-Azure DevOps --> email (Project) --> Project settings --> Service connections --> New service connection --> Azure Resource Manager --> Next --> [This will require a log in to Azure] --> [Select the details for the Web App]
+Azure DevOps --> email (Project) --> Project settings --> Service connections --> New service connection --> Azure Resource Manager --> Next --> [This will require a log in to Azure] --> [Select the details for the Web App] --> Call it morsley-uk-email
+
+Required Azure Infrastructure:
+
+- Subscription: Morsley UK
+- Resource Group: morsley-uk-rg
+- App Service Plan --> morsley-uk-asp
+- Web App --> morsley-uk-email-api
 
