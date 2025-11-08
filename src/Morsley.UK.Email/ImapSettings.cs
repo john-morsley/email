@@ -1,4 +1,4 @@
-﻿namespace Morsley.UK.Email;
+namespace Morsley.UK.Email;
 
 public class ImapSettings
 {
@@ -17,4 +17,9 @@ public class ImapSettings
     public bool OnlyUnseen { get; set; } = true;
 
     public bool MarkSeen { get; set; } = true;
+
+    /// <summary>
+    /// If true, skips SSL certificate validation. Use only for development/testing.
+    /// </summary>
+    public bool SkipCertificateValidation { get; set; } = false;
 }

@@ -1,4 +1,4 @@
-﻿namespace Morsley.UK.Email;
+namespace Morsley.UK.Email;
 
 public class SmtpSettings
 {
@@ -19,4 +19,9 @@ public class SmtpSettings
     public string FromAddress { get; set; } = "no-reply@example.uk";
 
     public int TimeoutSeconds { get; set; } = 30;
+
+    /// <summary>
+    /// If true, skips SSL certificate validation. Use only for development/testing.
+    /// </summary>
+    public bool SkipCertificateValidation { get; set; } = false;
 }

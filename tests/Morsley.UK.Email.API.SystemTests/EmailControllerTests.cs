@@ -1,54 +1,8 @@
-using System.Text;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Morsley.UK.Email.API.Extensions;
-using Morsley.UK.Email.API.Models;
-using Morsley.UK.Email.Common.Models;
-using Morsley.UK.Email.Persistence;
-using Morsley.UK.Email.Persistence.Extensions;
-using Shouldly;
-
-namespace Morsley.UK.Email.IntegrationTests;
+namespace Morsley.UK.Email.API.SystemTests;
 
 [TestFixture]
-public class EmailControllerIntegrationTests
+public class EmailApiTests : EmailApiTestsBase
 {
-    private EmailApiWebApplicationFactory _factory = null!;
-    private HttpClient _client = null!;
-    private TestSettings _testSettings = null!;
-
-    [OneTimeSetUp]
-    public async Task OneTimeSetUp()
-    {
-        _factory = new EmailApiWebApplicationFactory();
-        await _factory.InitializeAsync();
-        _client = _factory.CreateClient();
-        
-        // Load test settings from configuration
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.Test.json")
-            .AddUserSecrets<EmailControllerIntegrationTests>()
-            .Build();
-            
-        _testSettings = new TestSettings();
-        configuration.GetSection("TestSettings").Bind(_testSettings);
-    }
-
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        _client?.Dispose();
-        if (_factory != null)
-        {
-            await _factory.CleanupAsync();
-            _factory.Dispose();
-        }
-    }
-
     [Test]
     // Given: We have a valid email
     //  When: That email is sent with the API /api/send (POST)
@@ -57,13 +11,14 @@ public class EmailControllerIntegrationTests
     public async Task Send_Email()
     {
         // Arrange
+        var to = new List<string> { TestSettings.TestEmailAddress };
         var fullDateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
-        var subject = $"Morsley.UK.Email.IntegrationTests Email - {fullDateTime}";
-        var body = $"This is a test email from integration tests. ({fullDateTime})";
-
+        var subject = $"Morsley.UK.Email.SystemTests - {fullDateTime}";
+        var body = $"This is a test email from Morsley.UK.Email.SystemTests sent on {fullDateTime}";
+        
         var sendableEmail = new SendableEmailMessage
         {
-            To = new List<string> { _testSettings.TestEmailAddress },
+            To = to,
             Subject = subject,
             TextBody = body
         };
@@ -77,7 +32,7 @@ public class EmailControllerIntegrationTests
         Console.WriteLine("Act 1... POST /api/email");
 
         // Act
-        var sendResponse = await _client.PostAsync("/api/email", content);
+        var sendResponse = await Client.PostAsync("/api/email", content);
 
         // Assert
         sendResponse.ShouldNotBeNull();
@@ -89,17 +44,15 @@ public class EmailControllerIntegrationTests
         var sendResponseObject = JsonSerializer.Deserialize<JsonElement>(sendResponseContent);
 
         sendResponseObject.TryGetProperty("id", out var sendIdProperty).ShouldBeTrue();
-        var sendEmailId = sendIdProperty.GetString();
-        sendEmailId.ShouldNotBeNullOrEmpty();
+        var sentEmailId = sendIdProperty.GetString();
+        sentEmailId.ShouldNotBeNullOrEmpty();
 
         // Verify Location header is set
         sendResponse.Headers.Location.ShouldNotBeNull();
-        sendResponse.Headers.Location.ToString().ShouldContain("api/email/");
+        sendResponse.Headers.Location.ToString().ShouldContain($"api/email/{sentEmailId}");
 
         // Verify the email was persisted in the database
-        var sentEmail = sendableEmail.ToEmailMessage();
-        sentEmail.Id = sendEmailId;
-        await VerifySentEmailPersistedInDatabase(sentEmail, subject, body);
+        await VerifySentEmailPersistedInDatabase(sentEmailId, to, subject, body);
     }
 
     [Test]
@@ -117,13 +70,14 @@ public class EmailControllerIntegrationTests
         // Send the email...
 
         // Arrange
+        var to = new List<string> { TestSettings.TestEmailAddress };
         var fullDateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
-        var subject = $"Morsley.UK.Email.IntegrationTests Email - {fullDateTime}";
+        var subject = $"Morsley.UK.Email.SystemTests - {fullDateTime}";
         var body = $"This is a test email from integration tests. ({fullDateTime})";
 
         var sendableEmail = new SendableEmailMessage
         {
-            To = new List<string> { _testSettings.TestEmailAddress },
+            To = to,
             Subject = subject,
             TextBody = body
         };
@@ -137,7 +91,7 @@ public class EmailControllerIntegrationTests
         Console.WriteLine("Act 1... POST /api/email");
 
         // Act 1
-        var sendResponse = await _client.PostAsync("/api/email", content);
+        var sendResponse = await Client.PostAsync("/api/email", content);
 
         // Assert 1
         sendResponse.ShouldNotBeNull();
@@ -149,17 +103,15 @@ public class EmailControllerIntegrationTests
         var sendResponseObject = JsonSerializer.Deserialize<JsonElement>(sendResponseContent);
 
         sendResponseObject.TryGetProperty("id", out var sendIdProperty).ShouldBeTrue();
-        var sendEmailId = sendIdProperty.GetString();
-        sendEmailId.ShouldNotBeNullOrEmpty();
+        var sentEmailId = sendIdProperty.GetString();
+        sentEmailId.ShouldNotBeNullOrEmpty();
         
         // Verify Location header is set
         sendResponse.Headers.Location.ShouldNotBeNull();
-        sendResponse.Headers.Location.ToString().ShouldContain("api/email/");
+        sendResponse.Headers.Location.ToString().ShouldContain($"api/email/{sentEmailId}");
 
         // Verify the email was persisted in the database
-        var sentEmail = sendableEmail.ToEmailMessage();
-        sentEmail.Id = sendEmailId;
-        await VerifySentEmailPersistedInDatabase(sentEmail, subject, body);
+        await VerifySentEmailPersistedInDatabase(sentEmailId, to, subject, body);
 
         // Retreive the email...
 
@@ -168,32 +120,45 @@ public class EmailControllerIntegrationTests
         const int maximumNumberOfRetries = 10;
         var numberOfRetries = 0;
 
-        Common.Models.EmailMessage? foundEmail = null;
+        EmailMessage? foundEmail = null;
 
-        Console.WriteLine("Act 2... GET /api/email/all");
+        Console.WriteLine("Act 2... GET /api/emails");
         do
         {
             numberOfRetries++;
             Console.WriteLine($"Attempt: {numberOfRetries}");
 
             // Act 2...            
-            var retrieveResponse = await _client.GetAsync("/api/email/all");
+            var retrieveResponse = await Client.GetAsync("/api/emails");
 
             // Assert 2
             retrieveResponse.ShouldNotBeNull();
             retrieveResponse.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
 
             var retrieveResponseContent = await retrieveResponse.Content.ReadAsStringAsync();
-            Console.WriteLine($"GET /api/email/all response: {retrieveResponseContent}");
+            Console.WriteLine($"GET /api/emails response: {retrieveResponseContent}");
 
-            var receivedEmails = JsonSerializer.Deserialize<List<Common.Models.EmailMessage>>(retrieveResponseContent, new JsonSerializerOptions
+            var pageOfEmails = JsonSerializer.Deserialize<PaginatedResponse<Common.Models.EmailMessage>>(retrieveResponseContent, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            if (receivedEmails is not null && receivedEmails.Count != 0)
+            if (pageOfEmails is not null)
             {
-                foreach (var receivedEmail in receivedEmails)
+                pageOfEmails.Count.ShouldBeGreaterThanOrEqualTo(0);
+                pageOfEmails.Page.ShouldBe(1);
+                pageOfEmails.PageSize.ShouldBe(20);
+                pageOfEmails.TotalItems.ShouldBeGreaterThanOrEqualTo(0);
+                pageOfEmails.TotalPages.ShouldBeGreaterThanOrEqualTo(1);
+                pageOfEmails.HasPrevious.ShouldBeFalse();
+
+                // We need a mechanism for getting other pages...
+                //for (int pageNumber = 0; pageNumber < pageOfEmails.TotalPages; pageNumber++)
+                //{
+                    // ToDo
+                //}
+
+                foreach (var receivedEmail in pageOfEmails.Items)
                 {
                     if (receivedEmail.Subject == subject &&
                         receivedEmail.TextBody!.Contains(body))
@@ -204,7 +169,7 @@ public class EmailControllerIntegrationTests
                 }
             }
 
-            await Task.Delay(1000); // Wait for a second before trying again.
+            if (foundEmail is null) await Task.Delay(1000); // Wait for a second before trying again.
 
         } while (numberOfRetries < maximumNumberOfRetries);
 
@@ -214,7 +179,7 @@ public class EmailControllerIntegrationTests
         }
         else
         {
-            await VerifyReceivedEmailPersistedInDatabase(foundEmail, subject, body);
+            await VerifyReceivedEmailPersistedInDatabase(foundEmail.Id, to, subject, body);
             Assert.Pass("Matched the sent email");
         }
     }
@@ -243,49 +208,49 @@ public class EmailControllerIntegrationTests
     //    Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.BadRequest));
     //}
 
-    private async Task VerifySentEmailPersistedInDatabase(EmailMessage email, string subject, string body)
+    private async Task VerifySentEmailPersistedInDatabase(string emailId, List<string> to, string subject, string body)
     {
-        ArgumentNullException.ThrowIfNull(email);
-        if (email.Id is null) { throw new ArgumentNullException("email.Id"); }
+        ArgumentNullException.ThrowIfNull(emailId);
 
-        email.ShouldNotBeNull();
+        to.ShouldNotBeNull();
+        to.Any().ShouldBeTrue();        
         subject.ShouldNotBeNullOrEmpty();
         body.ShouldNotBeNullOrEmpty();
+        emailId.ShouldNotBeNull();
 
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.Test.json")
-            .AddUserSecrets<EmailControllerIntegrationTests>()
+            .AddUserSecrets<EmailApiTests>()
             .Build();
-        
-        services.AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Information));
-        services.AddEmailPersistence(configuration);
-        
-        var serviceProvider = services.BuildServiceProvider();
-        var persistenceService = serviceProvider.GetRequiredService<ISentEmailPersistenceService>();
-        
-        // Retrieve the email from the database
-        var persistedEmail = await persistenceService.GetEmailAsync(email.Id);
-        
+
+        var databaseId = configuration.GetValue<string>("CosmosDb:DatabaseName");
+        var containerId = configuration.GetValue<string>("CosmosDb:SentEmailsContainerName");
+
+        var persistedSentEmail = await CosmosFixture.GetItemAsync<EmailMessage>(databaseId, containerId, emailId, emailId);
+               
         // Verify the email was found
-        persistedEmail.ShouldNotBeNull("Email should be persisted in the sent database");
-        
+        persistedSentEmail.ShouldNotBeNull("Email should be persisted in the sent database");
+
         // Verify email content matches what was sent
-        persistedEmail.Subject.ShouldBe(email.Subject, "Subject did not match");
-        persistedEmail.TextBody.ShouldBe(email.TextBody, "Text body not match");
-        persistedEmail.To.ShouldBe(email.To, "To recipients did not match");
+        persistedSentEmail.To.ShouldBe(to, "To recipients did not match");
+        persistedSentEmail.Subject.ShouldBe(subject, "Subject did not match");
+        persistedSentEmail.TextBody.ShouldBe(body, "Text body not match");        
         
         // Verify the email has a sent timestamp
-        persistedEmail.SentAt.ShouldNotBeNull("Email should have a SentAt timestamp");
+        persistedSentEmail.SentAt.ShouldNotBeNull("Email should have a SentAt timestamp");
+
+        // Verify the email has a batch number
+        persistedSentEmail.BatchNumber.ShouldBeNull("Email should NOT have a BatchNumber");
     }
 
-    private async Task VerifyReceivedEmailPersistedInDatabase(EmailMessage email, string subject, string body)
+    private async Task VerifyReceivedEmailPersistedInDatabase(string emailId, List<string> to, string subject, string body)
     {
-        ArgumentNullException.ThrowIfNull(email);
-        if (email.Id is null) { throw new ArgumentNullException("email.Id"); }
+        ArgumentNullException.ThrowIfNull(emailId);        
 
-        email.ShouldNotBeNull();
+        to.ShouldNotBeNull();
+        to.Any().ShouldBeTrue();
         subject.ShouldNotBeNullOrEmpty();
         body.ShouldNotBeNullOrEmpty();
 
@@ -293,27 +258,26 @@ public class EmailControllerIntegrationTests
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.Test.json")
-            .AddUserSecrets<EmailControllerIntegrationTests>()
+            .AddUserSecrets<EmailApiTests>()
             .Build();
 
-        services.AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Information));
-        services.AddEmailPersistence(configuration);
+        var databaseId = configuration.GetValue<string>("CosmosDb:DatabaseName");
+        var containerId = configuration.GetValue<string>("CosmosDb:ReceivedEmailsContainerName");
 
-        var serviceProvider = services.BuildServiceProvider();
-        var persistenceService = serviceProvider.GetRequiredService<IReceivedEmailPersistenceService>();
-
-        // Retrieve the email from the database
-        var persistedEmail = await persistenceService.GetEmailAsync(email.Id);
+        var persistedReceivedEmail = await CosmosFixture.GetItemAsync<EmailMessage>(databaseId, containerId, emailId, emailId);
 
         // Verify the email was found
-        persistedEmail.ShouldNotBeNull("Email should be persisted in the received database");
+        persistedReceivedEmail.ShouldNotBeNull("Email should be persisted in the sent database");
 
         // Verify email content matches what was sent
-        persistedEmail.Subject.ShouldBe(email.Subject, "Subject did not match");
-        persistedEmail.TextBody.ShouldBe(email.TextBody, "Text body not match");
-        persistedEmail.To.ShouldBe(email.To, "To recipients did not match");
+        persistedReceivedEmail.To.ShouldBe(to, "To recipients did not match");
+        persistedReceivedEmail.Subject.ShouldBe(subject, "Subject did not match");
+        persistedReceivedEmail.TextBody.Trim('\r', '\n').ShouldBe(body, "Text body not match");
 
         // Verify the email has a sent timestamp
-        persistedEmail.BatchNumber.ShouldNotBeNull("Email should have a BatchNumber");
+        persistedReceivedEmail.SentAt.ShouldNotBeNull("Email should have a SentAt timestamp");
+
+        // Verify the email has a batch number
+        persistedReceivedEmail.BatchNumber.ShouldNotBeNull("Email should have a BatchNumber");
     }
 }

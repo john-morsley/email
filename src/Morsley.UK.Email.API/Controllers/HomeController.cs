@@ -34,7 +34,7 @@ public class HomeController : Controller
         ViewBag.IsKeyVaultHealthy = IsKeyVaultHealthy(out var keyVaultDetails);
         ViewBag.KeyVaultDetails = keyVaultDetails;
 
-        var cosmosHealth = await IsCosmoDbHealthy();
+        var cosmosHealth = await IsCosmosDbHealthy();
         ViewBag.IsCosmosDbHealthy = cosmosHealth.IsHealthy;
         ViewBag.CosmosDbDetails = cosmosHealth.Details;
 
@@ -48,34 +48,41 @@ public class HomeController : Controller
 
     private bool IsKeyVaultHealthy(out IList<string> details)
     {
-        details = new List<string>();
+        details = [];
 
-        var testSecret = _configuration["test-secret"];
-        var expectedTestSecretValue = _configuration["ExpectedTestSecretValue"];
+        var morsleyUkCosmosDbPrimaryReadKey = _configuration["CosmosDb:PrimaryReadKey"];
+        details.Add($"MorsleyUk--CosmosDb--PrimaryReadKey: {morsleyUkCosmosDbPrimaryReadKey.ToMaskedSecret()}");
 
-        if (testSecret != expectedTestSecretValue) return false;
+        var morsleyUkCosmosDbSecondaryReadKey = _configuration["CosmosDb:SecondaryReadKey"];
+        details.Add($"MorsleyUk--CosmosDb--SecondaryReadKey: {morsleyUkCosmosDbSecondaryReadKey.ToMaskedSecret()}");
 
-        var morsleyUkCosmosDbPrimaryReadWriteKey = _configuration["morsley-uk-cosmos-db-primary-read-write-key"];
-        details.Add($"morsley-uk-cosmos-db-primary-read-write-key: {morsleyUkCosmosDbPrimaryReadWriteKey.ToMaskedSecret()}");
-        var morsleyUkCosmosDbSecondaryReadWriteKey = _configuration["morsley-uk-cosmos-db-secondary-read-write-key"];
-        details.Add($"morsley-uk-cosmos-db-secondary-read-write-key: {morsleyUkCosmosDbSecondaryReadWriteKey.ToMaskedSecret()}");
-        var morsleyUkCosmosDbPrimaryReadKey = _configuration["morsley-uk-cosmos-db-primary-read-key"];
-        details.Add($"morsley-uk-cosmos-db-primary-read-key: {morsleyUkCosmosDbPrimaryReadKey.ToMaskedSecret()}");
-        var morsleyUkCosmosDbSecondaryReadKey = _configuration["morsley-uk-cosmos-db-secondary-read-key"];
-        details.Add($"morsley-uk-cosmos-db-secondary-read-key: {morsleyUkCosmosDbSecondaryReadKey.ToMaskedSecret()}");
+        var morsleyUkCosmosDbPrimaryReadWriteKey = _configuration["CosmosDb:PrimaryReadWriteKey"];
+        details.Add($"MorsleyUk--CosmosDb--PrimaryReadWriteKey: {morsleyUkCosmosDbPrimaryReadWriteKey.ToMaskedSecret()}");
+
+        var morsleyUkCosmosDbSecondaryReadWriteKey = _configuration["CosmosDb:SecondaryReadWriteKey"];
+        details.Add($"MorsleyUk--CosmosDb--SecondaryReadWriteKey: {morsleyUkCosmosDbSecondaryReadWriteKey.ToMaskedSecret()}");
 
         return true;
     }
 
-    private async Task<(bool IsHealthy, IList<string> Details)> IsCosmoDbHealthy()
+    private async Task<(bool IsHealthy, IList<string> Details)> IsCosmosDbHealthy()
     {
         var results = new List<string>();
         var isHealthy = true;
 
         try
-        {
+        {            
+            if (_cosmosOptions.UseLocalEmulator)
+            {
+                results.Add($"Using Local Emulator: Yes");
+            }
+            else
+            {
+                results.Add($"Using Local Emulator: No");
+            }
+
             var account = await _cosmosClient.ReadAccountAsync();
-            results.Add($"Account endpoint: {_cosmosClient.Endpoint}");
+            results.Add($"Endpoint: {_cosmosClient.Endpoint}");
 
             var database = _cosmosClient.GetDatabase(_cosmosOptions.DatabaseName);
             var dbResponse = await database.ReadAsync();

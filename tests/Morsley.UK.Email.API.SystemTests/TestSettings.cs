@@ -1,4 +1,4 @@
-namespace Morsley.UK.Email.IntegrationTests;
+namespace Morsley.UK.Email.API.SystemTests;
 
 public class TestSettings
 {

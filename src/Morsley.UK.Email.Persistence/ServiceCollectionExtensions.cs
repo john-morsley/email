@@ -15,8 +15,9 @@ public static class ServiceCollectionExtensions
             .AddOptions<CosmosDbOptions>()
             .Bind(configuration.GetSection(sectionName))
             .Validate(options => !string.IsNullOrWhiteSpace(options.Endpoint), "CosmosDb:Endpoint is required")
-            .Validate(options => !string.IsNullOrWhiteSpace(options.PrimaryKey), "CosmosDb:Key is required")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.PrimaryReadWriteKey), "CosmosDb:PrimaryReadWriteKey is required")
             .Validate(options => !string.IsNullOrWhiteSpace(options.DatabaseName), "CosmosDb:DatabaseName is required")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.PartitionKey), "CosmosDb:PartitionKey is required")
             .Validate(options => !string.IsNullOrWhiteSpace(options.SentEmailsContainerName), "CosmosDb:SentEmailsContainerName is required")
             .Validate(options => !string.IsNullOrWhiteSpace(options.ReceivedEmailsContainerName), "CosmosDb:ReceivedEmailsContainerName is required")
             .ValidateOnStart();
@@ -38,7 +39,7 @@ public static class ServiceCollectionExtensions
             };
             
             // For Cosmos DB emulator, bypass SSL certificate validation and add retry logic
-            if (options.Endpoint.Contains("localhost") || options.Endpoint.Contains("127.0.0.1"))
+            if (options.UseLocalEmulator)
             {
                 cosmosClientOptions.HttpClientFactory = () =>
                 {
@@ -53,7 +54,7 @@ public static class ServiceCollectionExtensions
                 };
             }
             
-            return new CosmosClient(options.Endpoint, options.PrimaryKey, cosmosClientOptions);
+            return new CosmosClient(options.Endpoint, options.PrimaryReadWriteKey, cosmosClientOptions);
         });
 
         // Register sent email persistence service
@@ -99,7 +100,7 @@ public static class ServiceCollectionExtensions
             .AddOptions<CosmosDbOptions>()
             .Configure(configure)
             .Validate(options => !string.IsNullOrWhiteSpace(options.Endpoint), "CosmosDb:Endpoint is required")
-            .Validate(options => !string.IsNullOrWhiteSpace(options.PrimaryKey), "CosmosDb:Key is required")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.PrimaryReadWriteKey), "CosmosDb:PrimaryReadWriteKey is required")
             .Validate(options => !string.IsNullOrWhiteSpace(options.DatabaseName), "CosmosDb:DatabaseName is required")
             .Validate(options => !string.IsNullOrWhiteSpace(options.SentEmailsContainerName), "CosmosDb:SentEmailsContainerName is required")
             .Validate(options => !string.IsNullOrWhiteSpace(options.ReceivedEmailsContainerName), "CosmosDb:ReceivedEmailsContainerName is required")
@@ -137,7 +138,7 @@ public static class ServiceCollectionExtensions
                 };
             }
             
-            return new CosmosClient(options.Endpoint, options.PrimaryKey, cosmosClientOptions);
+            return new CosmosClient(options.Endpoint, options.PrimaryReadWriteKey, cosmosClientOptions);
         });
 
         // Register sent email persistence service
@@ -202,13 +203,13 @@ public static class ServiceCollectionExtensions
 
                 // Create sent emails container if it doesn't exist
                 logger?.LogInformation("Creating container '{ContainerName}'...", options.SentEmailsContainerName);
-                var sentContainerProperties = new ContainerProperties(options.SentEmailsContainerName, "/partitionKey");
+                var sentContainerProperties = new ContainerProperties(options.SentEmailsContainerName, options.PartitionKey);
                 var sentContainerResponse = await databaseResponse.Database.CreateContainerIfNotExistsAsync(sentContainerProperties);
                 logger?.LogInformation("Container '{ContainerName}' status: {StatusCode}", options.SentEmailsContainerName, sentContainerResponse.StatusCode);
                 
                 // Create received emails container if it doesn't exist
                 logger?.LogInformation("Creating container '{ContainerName}'...", options.ReceivedEmailsContainerName);
-                var receivedContainerProperties = new ContainerProperties(options.ReceivedEmailsContainerName, "/partitionKey");
+                var receivedContainerProperties = new ContainerProperties(options.ReceivedEmailsContainerName, options.PartitionKey);
                 var receivedContainerResponse = await databaseResponse.Database.CreateContainerIfNotExistsAsync(receivedContainerProperties);
                 logger?.LogInformation("Container '{ContainerName}' status: {StatusCode}", options.ReceivedEmailsContainerName, receivedContainerResponse.StatusCode);
 

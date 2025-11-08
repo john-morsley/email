@@ -7,7 +7,7 @@ public class EmailsController(
     IEmailReader emailReader,
     IReceivedEmailPersistenceService receivedEmailPersistenceService) : ControllerBase
 {
-    [HttpGet("all", Name = "all")]
+    [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] Common.Models.PaginationRequest? pagination = null)
     {
         // Use default pagination if not provided

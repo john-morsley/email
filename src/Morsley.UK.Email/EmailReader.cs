@@ -1,4 +1,4 @@
-﻿namespace Morsley.UK.Email;
+namespace Morsley.UK.Email;
 
 public class EmailReader : IEmailReader
 {
@@ -15,8 +15,11 @@ public class EmailReader : IEmailReader
 
         using var client = new ImapClient();
 
-        // In production, validate the cert properly or pin it.
-        // client.ServerCertificateValidationCallback = (sender, cert, chain, errors) => true;
+        // Skip certificate validation if configured (for development/testing only)
+        if (settings.SkipCertificateValidation)
+        {
+            client.ServerCertificateValidationCallback = (sender, cert, chain, errors) => true;
+        }
 
         await client.ConnectAsync(
             settings.Server, 

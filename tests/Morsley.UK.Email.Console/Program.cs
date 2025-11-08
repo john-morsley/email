@@ -1,4 +1,3 @@
-
 const int NumberOfReadAttempts = 5;
 const int NumberOfSecondsInbetweenAttempts = 3;
 
@@ -19,7 +18,7 @@ var host = Host.CreateDefaultBuilder(args)
 
 var unique = Guid.NewGuid();
 var emailTo = host.Services.GetRequiredService<IConfiguration>()["Data:ToAddress"];
-var emailSubject = $"Test - {unique}";
+var emailSubject = $"Morsley.UK.Email.Console - {unique}";
 var emailBody = $"Unique: {unique}";
 
 var sender = host.Services.GetRequiredService<IEmailSender>();
@@ -32,16 +31,19 @@ var message = new Morsley.UK.Email.Common.Models.EmailMessage
 };
 var empty = new Morsley.UK.Email.Common.Models.EmailMessage 
 { 
-    To = [emailTo], 
-    Subject = $"Blank - {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss:fff")}", 
-    TextBody = "Nothing" 
+    To = [ emailTo ], 
+    Subject = $"Morsley.UK.Email.Console - {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss:fff")}", 
+    TextBody = $"Unique: {Guid.NewGuid}"
 };
 
 Console.WriteLine("============================== SENDING ==============================");
 try
 {
-    Console.WriteLine("Sending email...");
+    var i = 1;
 
+    Console.WriteLine("Sending emails...");
+
+    Console.WriteLine("");
     await sender.SendAsync(empty);
     await sender.SendAsync(empty);
         
@@ -108,7 +110,12 @@ async Task<bool> ReadEmails()
 
             Console.WriteLine($"Number {count++}:");
             Console.WriteLine($"Subject: {email.Subject}");
-            var textBody = email.TextBody.TrimEnd('\n', '\r');
+
+            // Email had an HTML body, but no text body.
+
+            var textBody = email.TextBody; 
+            if (textBody is not null && textBody.Length > 0) textBody = textBody.TrimEnd('\n', '\r');
+
             Console.WriteLine($"Body (Text): {textBody}");
             if (email.Subject == emailSubject &&  textBody == emailBody)
             {

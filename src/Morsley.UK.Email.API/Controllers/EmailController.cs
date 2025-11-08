@@ -35,7 +35,7 @@ public class EmailController(
     //    }
     //}
 
-    [HttpPost(Name = "send")]
+    [HttpPost]
     public async Task<IActionResult> Send([FromBody] SendableEmailMessage sendable)
     {
         logger.LogInformation("Sending email with subject: {Subject}", sendable.Subject);

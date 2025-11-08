@@ -32,8 +32,11 @@ public class EmailSender : IEmailSender
             settings.UseStartTls ? SecureSocketOptions.StartTls :
             SecureSocketOptions.StartTlsWhenAvailable;
 
-        // In production, validate or pin certs.
-        // client.ServerCertificateValidationCallback = (sender, cert, chain, errors) => true;
+        // Skip certificate validation if configured (for development/testing only)
+        if (settings.SkipCertificateValidation)
+        {
+            client.ServerCertificateValidationCallback = (sender, cert, chain, errors) => true;
+        }
 
         try
         {

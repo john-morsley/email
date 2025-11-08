@@ -11,7 +11,7 @@ public class EmailDocument
     public string Id { get; set; } = Uuid.NewDatabaseFriendly(UUIDNext.Database.Other).ToString();
 
     [JsonProperty("partitionKey")]
-    public string PartitionKey => _createdAt.ToString("yyyy-MM");
+    public string PartitionKey => Id;
 
     public List<string> To { get; set; } = new();
 

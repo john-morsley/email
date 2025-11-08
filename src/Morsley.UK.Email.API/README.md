@@ -1,3 +1,17 @@
+﻿Morsley.UK.Email.API
+====================
+
+This project requires the following:
+
+1. A Cosmos DB (or an emulator)
+2. An email server (supporting SMPT and IMAP)
+
+The settings for these need to be in:
+
+1. appsettings.json
+2. secrets.json
+
+```JSON
 {
   "ImapSettings": {
     "Server": "mail.livemail.co.uk",
@@ -18,13 +32,9 @@
     "ToAddress": "[Stored in User Secrets]"
   },
   "CosmosDb": {
-    "Endpoint": "[Stored in User Secrets]",
-    "PrimaryReadKey": "[Stored in User Secrets]",
-    "SecondaryReadKey": "[Stored in User Secrets]",
-    "PrimaryReadWriteKey": "[Stored in User Secrets]",
-    "SecondaryReadWriteKey": "[Stored in User Secrets]",
-    "DatabaseName": "morsley-uk-cosmos-db",
-    "PartitionKey": "/id",
+    "Endpoint": "https://localhost:8081",
+    "PrimaryKey": "[Stored in User Secrets]",
+    "DatabaseName": "morsley-uk-db",
     "SentContainerName": "emails-sent",
     "ReceivedContainerName": "emails-inbox"
   },
@@ -34,9 +44,14 @@
     "ClientSecret": "[In User Secrets]"
   },
   "KeyVault": {
-    "Name": "morsley-uk-key-vault",
-    "VaultUri": "https://morsley-uk-kv.vault.azure.net/"
+    "Name": "morsley-uk-key-vault"
   },
+  "test-secret": "[This value will come from the Azure KeyVault]",
+  "ExpectedTestSecretValue": "Password!1",
+  "morsley-uk-cosmos-db-primary-read-write-key": "[This value will come from the Azure KeyVault]",
+  "morsley-uk-cosmos-db-secondary-read-write-key": "[This value will come from the Azure KeyVault]",
+  "morsley-uk-cosmos-db-primary-read-key": "[This value will come from the Azure KeyVault]",
+  "morsley-uk-cosmos-db-secondary-read-key": "[This value will come from the Azure KeyVault]",
   "Logging": {
     "LogLevel": {
       "Default": "Information",
@@ -45,3 +60,4 @@
   },
   "AllowedHosts": "*"
 }
+```
