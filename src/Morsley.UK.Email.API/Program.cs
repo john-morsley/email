@@ -1,5 +1,11 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure logging for Azure App Service
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.AddAzureWebAppDiagnostics();
+
 builder.Configuration.AddUserSecrets<Program>();
 
 builder.ConfigureAzureKeyVault();
@@ -23,10 +29,15 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Application starting up - Morsley UK Email API");
+
 using (var scope = app.Services.CreateScope())
 {
     await scope.ServiceProvider.InitializeCosmosDbAsync(throwOnError: false);
 }
+
+logger.LogInformation("Application started successfully");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

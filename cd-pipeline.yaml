@@ -1,11 +1,11 @@
-name: Morsley-UK.Email.CD
+name: cd
 
 trigger: none
 
 resources:
   pipelines:
   - pipeline: dependant-cd-pipeline
-    source: Morsley-UK.Email.CI
+    source: ci
     project: email
     branch: main
     trigger:
@@ -29,14 +29,14 @@ steps:
   inputs:
     buildType: 'specific'
     project: 'email'
-    definition: 'Morsley-UK.Email.CI'
+    definition: 'ci'
     buildVersionToDownload: 'latest'
     artifactName: 'drop'
     targetPath: '$(Pipeline.Workspace)/artifacts'
 
 # Show downloaded artifacts...
 - task: CmdLine@2
-  displayName: "--> Show downloaded artifacts <--"
+  displayName: "--> Show Downloaded Artifacts <--"
   inputs:
     script: |
       echo "Contents of artifacts directory:"
@@ -46,7 +46,7 @@ steps:
 
 # Verify deployment package exists...
 - task: CmdLine@2
-  displayName: "--> Verify deployment package from CI pipeline <--"
+  displayName: "--> Verify Deployment Package From CI Pipeline <--"
   inputs:
     script: |
       if [ -f "$(Pipeline.Workspace)/artifacts/publish/Morsley.UK.Email.API.zip" ]; then
@@ -70,3 +70,14 @@ steps:
     appType: 'webApp'
     package: '$(Pipeline.Workspace)/artifacts/publish/Morsley.UK.Email.API.zip'
     deploymentMethod: 'auto'
+
+# Run system tests against deployed API (smoke tests)...
+- task: DotNetCoreCLI@2
+  displayName: "--> Run System Tests Against Production <--"
+  inputs:
+    command: test
+    projects: 'tests/Morsley.UK.Email.API.SystemTests/Morsley.UK.Email.API.SystemTests.csproj'
+    arguments: '--configuration $(BuildConfiguration)'
+    publishTestResults: true
+  env:
+    API_BASE_URL: 'https://$(appName).azurewebsites.net'
