@@ -1,4 +1,4 @@
-name: CI-Pipeline
+name: Morsley-UK.Email.CI
 
 trigger:
 - main

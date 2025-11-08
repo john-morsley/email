@@ -1,11 +1,11 @@
-name: CD-Pipeline
+name: Morsley-UK.Email.CD
 
 trigger: none
 
 resources:
   pipelines:
   - pipeline: dependant-cd-pipeline
-    source: ci
+    source: Morsley-UK.Email.CI
     project: email
     branch: main
     trigger:
