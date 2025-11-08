@@ -9,9 +9,9 @@ resources:
     project: email
     branch: main
     trigger:
-     branches:
-      include:
-      - main 
+      branches:
+        include:
+        - main 
 
 pool:
   vmImage: ubuntu-latest
