@@ -29,7 +29,7 @@ steps:
   inputs:
     buildType: 'specific'
     project: 'email'
-    definition: 'ci'
+    definition: 'Morsley-UK.Email.CI'
     buildVersionToDownload: 'latest'
     artifactName: 'drop'
     targetPath: '$(Pipeline.Workspace)/artifacts'
