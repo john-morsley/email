@@ -89,3 +89,22 @@ Required Azure Infrastructure:
 - App Service Plan --> morsley-uk-asp
 - Web App --> morsley-uk-email-api
 
+Important!
+
+The App Service must be grant access to the Key Vault.
+
+- Go to the App Service, morsley-uk-email.api
+- Settings --> Identity --> System assigned --> On --> Save
+- Azure will create a managed identity for the app.
+- Copy the Ibject (principal) ID --> b3e19e98-1044-4501-a100-90181ea90de4
+- Go to the Key Vault, morsley-uk-key-vault
+- Access Control (IAM)
+- Add --> Add Role Assignment
+- Search: Key Vault Secrets User
+- Select that role from the list
+- Click Next
+- Managed Identity
+- Members --> Select the 'morsley-uk-email-api' App Service --> Select
+- Note the Object ID should match the one generated above
+- Review + assign
+

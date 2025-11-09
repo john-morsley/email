@@ -23,34 +23,47 @@ public static class ServiceCollectionExtensions
 {
     public static WebApplicationBuilder ConfigureAzureKeyVault(this WebApplicationBuilder builder)
     {
+        ArgumentNullException.ThrowIfNull(builder);
+
         var configuration = builder.Configuration;
-        var keyVaultName = configuration["KeyVault:Name"];
 
-        if (string.IsNullOrEmpty(keyVaultName)) throw new InvalidOperationException("KeyVault:Name is not configured");
+        // Configure KeyVault settings
+        builder.Services
+            .AddOptions<KeyVaultSettings>()
+            .Bind(configuration.GetSection("KeyVault"))
+            .Validate(options => !string.IsNullOrWhiteSpace(options.Name), "KeyVault:Name is required")
+            .ValidateOnStart();
 
-        var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
+        // Configure Azure settings
+        builder.Services
+            .AddOptions<AzureSettings>()
+            .Bind(configuration.GetSection("Azure"))
+            .ValidateOnStart();
+
+        // Build a temporary service provider to get the options
+        using var serviceProvider = builder.Services.BuildServiceProvider();
+        var keyVaultSettings = serviceProvider.GetRequiredService<IOptions<KeyVaultSettings>>().Value;
+        var azureSettings = serviceProvider.GetRequiredService<IOptions<AzureSettings>>().Value;
+
+        var keyVaultUri = new Uri($"https://{keyVaultSettings.Name}.vault.azure.net/");
 
         // Try Managed Identity first (for Azure environments), fall back to client secret for local dev
         TokenCredential credential;
-        var clientSecret = configuration["Azure:ClientSecret"];
         
-        if (string.IsNullOrEmpty(clientSecret))
+        if (azureSettings.HasClientSecretCredentials)
+        {
+            // Use Client Secret (for local development)
+            Console.WriteLine("Using Client Secret for Key Vault authentication");
+            credential = new ClientSecretCredential(
+                azureSettings.TenantId!, 
+                azureSettings.ClientId!, 
+                azureSettings.ClientSecret!);
+        }
+        else
         {
             // Use Managed Identity (works in Azure App Service)
             Console.WriteLine("Using Managed Identity for Key Vault authentication");
             credential = new DefaultAzureCredential();
-        }
-        else
-        {
-            // Use Client Secret (for local development)
-            var clientId = configuration["Azure:ClientId"];
-            var tenantId = configuration["Azure:TenantId"];
-            
-            if (string.IsNullOrEmpty(clientId)) throw new InvalidOperationException("Azure:ClientId is not configured");
-            if (string.IsNullOrEmpty(tenantId)) throw new InvalidOperationException("Azure:TenantId is not configured");
-            
-            Console.WriteLine("Using Client Secret for Key Vault authentication");
-            credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
         }
 
         try
