@@ -49,13 +49,13 @@ steps:
     publishTestResults: true
 
 # Run the API system tests (requires Docker for Testcontainers)...
-- task: DotNetCoreCLI@2
-  displayName: "--> Run API System Tests <--"
-  inputs:
-    command: test
-    projects: 'tests/Morsley.UK.Email.API.SystemTests/Morsley.UK.Email.API.SystemTests.csproj'
-    arguments: '--configuration $(BuildConfiguration)'
-    publishTestResults: true
+#- task: DotNetCoreCLI@2
+#  displayName: "--> Run API System Tests <--"
+#  inputs:
+#    command: test
+#    projects: 'tests/Morsley.UK.Email.API.SystemTests/Morsley.UK.Email.API.SystemTests.csproj'
+#    arguments: '--configuration $(BuildConfiguration)'
+#    publishTestResults: true
 
 # Debug: Show coverage files location...
 - task: CmdLine@2

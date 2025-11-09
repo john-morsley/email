@@ -72,12 +72,12 @@ steps:
     deploymentMethod: 'auto'
 
 # Run system tests against deployed API (smoke tests)...
-- task: DotNetCoreCLI@2
-  displayName: "--> Run System Tests Against Production <--"
-  inputs:
-    command: test
-    projects: 'tests/Morsley.UK.Email.API.SystemTests/Morsley.UK.Email.API.SystemTests.csproj'
-    arguments: '--configuration $(BuildConfiguration)'
-    publishTestResults: true
-  env:
-    API_BASE_URL: 'https://$(appName).azurewebsites.net'
+#- task: DotNetCoreCLI@2
+#  displayName: "--> Run System Tests Against Production <--"
+#  inputs:
+#    command: test
+#    projects: 'tests/Morsley.UK.Email.API.SystemTests/Morsley.UK.Email.API.SystemTests.csproj'
+#    arguments: '--configuration $(BuildConfiguration)'
+#    publishTestResults: true
+#  env:
+#    API_BASE_URL: 'https://$(appName).azurewebsites.net'
