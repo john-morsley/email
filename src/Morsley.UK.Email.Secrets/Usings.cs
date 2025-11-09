@@ -1,3 +1,4 @@
+global using Azure.Core;
 global using Azure.Extensions.AspNetCore.Configuration.Secrets;
 global using Azure.Identity;
 global using Azure.Security.KeyVault.Secrets;
