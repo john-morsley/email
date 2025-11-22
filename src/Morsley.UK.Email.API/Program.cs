@@ -1,3 +1,8 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Morsley.UK.Email.API.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure logging for Azure App Service
@@ -15,6 +20,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddEmailReader(builder.Configuration);
 builder.Services.AddEmailSender(builder.Configuration);
 builder.Services.AddEmailPersistence(builder.Configuration);
+
+// Configure Health Checks
+var startupHealthCheck = new StartupHealthCheck();
+builder.Services.AddSingleton(startupHealthCheck);
+builder.Services.AddHealthChecks()
+    .AddCheck("startup", () => startupHealthCheck.CheckHealthAsync(new HealthCheckContext()).Result)
+    .AddCheck<CosmosDbHealthCheck>("cosmosdb", tags: new[] { "ready", "db" });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -37,6 +49,8 @@ using (var scope = app.Services.CreateScope())
     await scope.ServiceProvider.InitializeCosmosDbAsync(throwOnError: false);
 }
 
+// Mark startup as complete for health checks
+startupHealthCheck.MarkStartupComplete();
 logger.LogInformation("Application started successfully");
 
 app.UseDefaultFiles();
@@ -56,6 +70,24 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Map health check endpoints
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = check => check.Name == "startup",
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready"),
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.Run();
 
