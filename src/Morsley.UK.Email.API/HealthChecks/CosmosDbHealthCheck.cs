@@ -1,8 +1,3 @@
-using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
-using Morsley.UK.Email.Persistence;
-
 namespace Morsley.UK.Email.API.HealthChecks;
 
 /// <summary>

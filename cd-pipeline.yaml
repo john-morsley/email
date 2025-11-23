@@ -4,7 +4,7 @@ trigger: none
 
 resources:
   pipelines:
-  - pipeline: dependant-cd-pipeline
+  - pipeline: dependent-cd-pipeline
     source: ci
     project: email
     branch: main
@@ -17,9 +17,9 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  azureSubscription: 'morsley-uk-email'
   appName: 'morsley-uk-email-api'
   artifactName: 'drop'
+  azureSubscription: 'morsley-uk-email'  
   packagePath: 'Morsley.UK.Email.API.zip'
 
 steps:

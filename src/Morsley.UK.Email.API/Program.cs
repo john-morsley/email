@@ -1,19 +1,24 @@
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Morsley.UK.Email.API.HealthChecks;
+using Morsley.UK.Email.API.Validators;
+using Morsley.UK.Email.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure logging for Azure App Service
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Logging.AddAzureWebAppDiagnostics();
 
-builder.Configuration.AddUserSecrets<Program>();
+//builder.Configuration.AddUserSecrets<Program>();
+
+builder
+    .Services
+        .AddOptions<SmtpSettings>()
+        .Bind(builder.Configuration.GetSection("SmtpSettings"))
+        .ValidateOnStart();
 
 builder.ConfigureAzureKeyVault();
+
+builder.Services.AddSingleton<IValidateOptions<SmtpSettings>, SmtpSettingsValidator>();
 
 builder.Services.AddControllersWithViews();
 

@@ -1,10 +1,5 @@
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-
 namespace Morsley.UK.Email.API.HealthChecks;
 
-/// <summary>
-/// Simple health check to verify the application has started successfully
-/// </summary>
 public class StartupHealthCheck : IHealthCheck
 {
     private volatile bool _isStartupComplete;

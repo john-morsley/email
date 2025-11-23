@@ -1,10 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Options;
-using Morsley.UK.Email.Persistence;
-using Morsley.UK.Email.API.Extensions;
-using System.Collections.Generic;
-
 namespace Morsley.UK.Email.API.Controllers;
 
 public class HomeController : Controller
@@ -50,6 +43,9 @@ public class HomeController : Controller
     {
         details = [];
 
+        var morsleyUkCosmosDbEndpoint = _configuration["CosmosDb:Endpoint"];
+        details.Add($"MorsleyUk--CosmosDb--Endpoint: {morsleyUkCosmosDbEndpoint.ToMaskedSecret()}");
+
         var morsleyUkCosmosDbPrimaryReadKey = _configuration["CosmosDb:PrimaryReadKey"];
         details.Add($"MorsleyUk--CosmosDb--PrimaryReadKey: {morsleyUkCosmosDbPrimaryReadKey.ToMaskedSecret()}");
 
@@ -61,6 +57,21 @@ public class HomeController : Controller
 
         var morsleyUkCosmosDbSecondaryReadWriteKey = _configuration["CosmosDb:SecondaryReadWriteKey"];
         details.Add($"MorsleyUk--CosmosDb--SecondaryReadWriteKey: {morsleyUkCosmosDbSecondaryReadWriteKey.ToMaskedSecret()}");
+
+        var morsleyUkImapSettingsPassword = _configuration["ImapSettings:Password"];
+        details.Add($"MorsleyUk--ImapSettings--Password: {morsleyUkImapSettingsPassword.ToMaskedSecret()}");
+
+        var morsleyUkImapSettingsUsername = _configuration["ImapSettings:Username"];
+        details.Add($"MorsleyUk--ImapSettings--Username: {morsleyUkImapSettingsUsername.ToMaskedSecret()}");
+
+        var morsleyUkSmtpSettingsPassword = _configuration["SmtpSettings:Password"];
+        details.Add($"MorsleyUk--SmtpSettings--Password: {morsleyUkSmtpSettingsPassword.ToMaskedSecret()}");
+
+        var morsleyUkSmtpSettingsUsername = _configuration["SmtpSettings:Username"];
+        details.Add($"MorsleyUk--SmtpSettings--Username: {morsleyUkSmtpSettingsUsername.ToMaskedSecret()}");
+
+        var morsleyUkSmtpSettingsFromAddress = _configuration["SmtpSettings:FromAddress"];
+        details.Add($"MorsleyUk--SmtpSettings--FromAddress: {morsleyUkSmtpSettingsFromAddress.ToMaskedSecret()}");
 
         return true;
     }

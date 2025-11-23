@@ -1,3 +1,5 @@
+using Morsley.UK.Email.Models;
+
 namespace Morsley.UK.Email;
 
 public class EmailReader : IEmailReader

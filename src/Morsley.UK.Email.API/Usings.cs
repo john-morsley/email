@@ -1,8 +1,15 @@
+global using HealthChecks.UI.Client;
+global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Razor.TagHelpers;
+global using Microsoft.Azure.Cosmos;
+global using Microsoft.Extensions.Diagnostics.HealthChecks;
+global using Microsoft.Extensions.Options;
 global using Microsoft.OpenApi.Models;
 global using MimeKit;
 global using Morsley.UK.Email;
 global using Morsley.UK.Email.API.Extensions;
+global using Morsley.UK.Email.API.HealthChecks;
 global using Morsley.UK.Email.API.Models;
 global using Morsley.UK.Email.Common.Attributes;
 global using Morsley.UK.Email.Common.Models;
@@ -10,3 +17,10 @@ global using Morsley.UK.Email.Persistence;
 global using Morsley.UK.Email.Secrets;
 global using System.ComponentModel.DataAnnotations;
 global using System.Text;
+
+
+
+
+
+global using Microsoft.Azure.Cosmos;
+global using Microsoft.Extensions.Options;

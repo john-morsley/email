@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace Morsley.UK.Email.API.Models;
 
 public class DisplayMessage

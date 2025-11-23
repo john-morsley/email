@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
 namespace Morsley.UK.Email.API.TagHelpers;
 
 [HtmlTargetElement("secret-alert")]

@@ -1,4 +1,3 @@
-
 namespace Morsley.UK.Email.API.Extensions;
 
 public static class MimeMessageExtensions

@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-
 namespace Morsley.UK.Email.API.Controllers;
 
 /// <summary>

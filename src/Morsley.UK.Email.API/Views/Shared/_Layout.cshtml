@@ -1,9 +1,13 @@
 ﻿@{
-    var isHome = string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), "Home", StringComparison.OrdinalIgnoreCase) && 
-                 string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), "Index", StringComparison.OrdinalIgnoreCase);
 
-    var isSwagger = string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), "Home", StringComparison.OrdinalIgnoreCase) && 
-                    string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), "Swagger", StringComparison.OrdinalIgnoreCase);
+    var controllerName = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var actionName = ViewContext.RouteData.Values["Action"]?.ToString();
+
+    var isOnHomePage = false;
+    var isOnSwaggerPage = false;
+
+    if (controllerName == "Home" && actionName == "Index") isOnHomePage = true;
+    if (controllerName == "Home" && actionName == "Swagger") isOnSwaggerPage = true;
 
 }
 
@@ -15,60 +19,67 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>@ViewData["Title"] - Test</title>
         <script type="importmap"></script>
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-        <link rel="stylesheet" href="~/WebApplication1.styles.css" asp-append-version="true" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/darkly/bootstrap.min.css" integrity="sha384-nNK9n28pDUDDgIiIqZ/MiyO3F4/9vsMtReZK39klb/MtkZI3/LtjSjlmyVPS3KdN" crossorigin="anonymous">        
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />        
     </head>
 
     <body>
 
         <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" style="height: 70px;">
                 <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Email</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+
+                    <img src="~/images/john-morsley.png" alt="John Morsley" style="position: absolute; top: 5px; left: 15px; height: 60px; z-index: 666;" />
+                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                            @if (isHome)
-                            {
-                                <span class="nav-link text-dark disabled" aria-disabled="true">Home</span>
-                            }
-                            else
-                            {
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            }
+                                @if (isOnHomePage)
+                                {
+                                    <span class="nav-link disabled text-muted">Home</span>
+                                }
+                                else
+                                {
+                                    <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="Index">Home</a>
+                                }
                             </li>
                             <li class="nav-item">
-                            @if (isSwagger)
-                            {
-                                <span class="nav-link text-dark disabled" aria-disabled="true">Swagger</span>
-                            }
-                            else
-                            {
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Swagger">Swagger</a>
-                            }
+                                @if (isOnSwaggerPage)
+                                {
+                                    <span class="nav-link disabled text-muted">Swagger</span>
+                                }
+                                else
+                                {
+                                    <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="Swagger">Swagger</a>
+                                }
                             </li>
                         </ul>
-                    </div>
+                    </div>                   
+
                 </div>
             </nav>
         </header>
 
-        <div class="container">
-            <main role="main" class="pb-3">
+        <div class="container mt-4" style="flex: 1;">
+            <main role="main" class="pt-3 pb-3">
                 @RenderBody()
             </main>
         </div>
 
-        <footer class="border-top footer text-muted fixed-bottom">
-            <div class="container text-center">Morsley UK</div>
+        <footer class="bg-dark text-light fixed-bottom" style="height: 70px; display: flex; align-items: center;">
+            <div class="container text-center">
+                <a class="navbar-brand" href="https://morsley.uk"  >
+                    <img src="~/images/morsley-uk.png" alt="Morsley UK" style="height: 40px;" class="pl-5" />
+                </a>
+            </div>
         </footer>
- 
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
         @await RenderSectionAsync("Scripts", required: false)
 
