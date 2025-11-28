@@ -2,6 +2,39 @@ html {
     font-size: 14px;
 }
 
+/* Navbar border styling */
+.navbar {
+    border-top: 1px solid #3cec97;
+    border-bottom: 1px solid #3cec97;
+}
+
+/* Footer border styling */
+footer {
+    border-top: 1px solid #3cec97;
+    border-bottom: 1px solid #3cec97;
+}
+
+/* Mobile burger menu dropdown borders */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        border: 1px solid #3cec97;
+        margin-top: 1rem;
+        padding: 0;
+        background-color: #2b3035;
+    }
+
+        .navbar-collapse .nav-item {
+            border-bottom: 1px solid #3cec97;
+            background-color: #2b3035;
+            padding: 0.5rem 0.5rem;
+        }
+
+            .navbar-collapse .nav-item:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+}
+
 @media (min-width: 768px) {
     html {
         font-size: 16px;
@@ -30,3 +63,4 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+

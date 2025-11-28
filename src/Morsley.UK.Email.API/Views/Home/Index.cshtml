@@ -4,10 +4,6 @@
 
 <div class="text-center">
 
-    <h1 class="display-4">Morsley UK Email API</h1>
-
-    @* <p>Test API Swagger: <a href="/swagger">Swagger</a></p> *@    
-
     @if (ViewBag.IsKeyVaultHealthy)
     {
         <partial name="_DisplayMessage" model='new DisplayMessage { Message = "Key Vault connection OK", Type = MessageType.Good, Details = ViewBag.KeyVaultDetails }' />

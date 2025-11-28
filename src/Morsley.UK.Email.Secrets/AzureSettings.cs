@@ -8,6 +8,8 @@ public class AzureSettings
 
     public string? ClientSecret { get; set; }
 
+    public string? ManagedIdentityClientId { get; set; }
+
     public bool HasClientSecretCredentials =>
         !string.IsNullOrEmpty(ClientId) &&
         !string.IsNullOrEmpty(TenantId) &&

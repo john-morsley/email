@@ -40,10 +40,19 @@ public static class ServiceCollectionExtensions
                 azureSettings.ClientId!, 
                 azureSettings.ClientSecret!);
         }
+        else if (!string.IsNullOrEmpty(azureSettings.ManagedIdentityClientId))
+        {
+            // Use User-Assigned Managed Identity (for Azure App Service)
+            Console.WriteLine($"Using User-Assigned Managed Identity for Key Vault authentication: {azureSettings.ManagedIdentityClientId}");
+            credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+            {
+                ManagedIdentityClientId = azureSettings.ManagedIdentityClientId
+            });
+        }
         else
         {
-            // Use Managed Identity (works in Azure App Service)
-            Console.WriteLine("Using Managed Identity for Key Vault authentication");
+            // Use Default Azure Credential (System-Assigned MI or local development)
+            Console.WriteLine("Using Default Azure Credential for Key Vault authentication");
             credential = new DefaultAzureCredential();
         }
 

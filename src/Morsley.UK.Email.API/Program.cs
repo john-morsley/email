@@ -8,15 +8,14 @@ builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 builder.Logging.AddAzureWebAppDiagnostics();
 
-//builder.Configuration.AddUserSecrets<Program>();
+builder.Configuration.AddUserSecrets<Program>();
+builder.ConfigureAzureKeyVault();
 
 builder
     .Services
         .AddOptions<SmtpSettings>()
         .Bind(builder.Configuration.GetSection("SmtpSettings"))
         .ValidateOnStart();
-
-builder.ConfigureAzureKeyVault();
 
 builder.Services.AddSingleton<IValidateOptions<SmtpSettings>, SmtpSettingsValidator>();
 
@@ -26,7 +25,6 @@ builder.Services.AddEmailReader(builder.Configuration);
 builder.Services.AddEmailSender(builder.Configuration);
 builder.Services.AddEmailPersistence(builder.Configuration);
 
-// Configure Health Checks
 var startupHealthCheck = new StartupHealthCheck();
 builder.Services.AddSingleton(startupHealthCheck);
 builder.Services.AddHealthChecks()
@@ -54,7 +52,6 @@ using (var scope = app.Services.CreateScope())
     await scope.ServiceProvider.InitializeCosmosDbAsync(throwOnError: false);
 }
 
-// Mark startup as complete for health checks
 startupHealthCheck.MarkStartupComplete();
 logger.LogInformation("Application started successfully");
 
@@ -65,6 +62,7 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Morsley UK Email API");
+    options.InjectStylesheet("/css/swagger-dark.css");
 });
 
 app.UseHttpsRedirection();
@@ -76,7 +74,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Map health check endpoints
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

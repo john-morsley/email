@@ -17,10 +17,3 @@ global using Morsley.UK.Email.Persistence;
 global using Morsley.UK.Email.Secrets;
 global using System.ComponentModel.DataAnnotations;
 global using System.Text;
-
-
-
-
-
-global using Microsoft.Azure.Cosmos;
-global using Microsoft.Extensions.Options;
