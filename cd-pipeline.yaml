@@ -19,7 +19,7 @@ pool:
 variables:
   appName: 'morsley-uk-email-api'
   artifactName: 'drop'
-  azureSubscription: 'morsley-uk-email'  
+  azureSubscription: 'morsley-uk-email-sc'  
   packagePath: 'Morsley.UK.Email.API.zip'
 
 steps:
