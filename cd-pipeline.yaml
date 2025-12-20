@@ -17,9 +17,9 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  appName: 'morsley-uk-email-api'
-  artifactName: 'drop'
   azureSubscription: 'morsley-uk-email-sc'  
+  appName: 'morsley-uk-email-api'
+  artifactName: 'drop'  
   packagePath: 'Morsley.UK.Email.API.zip'
 
 steps:
