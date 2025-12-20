@@ -1,4 +1,4 @@
-﻿Morsley.UK.Email.Console
+﻿Morsley.UK.Email.Example
 ========================
 
 This simple program does the following...
@@ -15,12 +15,12 @@ This simple program does the following...
 
 The 'blank' emails look like:
 
-- Subject = Morsley.UK.Email.Console - [YYYY-MM-DD HH:MM:SS:FFF]
+- Subject = Morsley.UK.Email.Example - [YYYY-MM-DD HH:MM:SS:FFF]
 - Text Body =
 
 The 'real' email looks like:
 
-- Subject = Morsley.UK.Email.Console - [Above GUID]
+- Subject = Morsley.UK.Email.Example - [Above GUID]
 - Text Body = Unique - [Above GUID]
 
 What is quite interesting is that the 'real' email is not always in the middle as you'd expect it to be!

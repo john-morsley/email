@@ -18,7 +18,7 @@
     <Project Path="src/Morsley.UK.Email/Morsley.UK.Email.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Morsley.UK.Email.Console/Morsley.UK.Email.Console.csproj" />
+    <Project Path="tests/Morsley.UK.Email.Example/Morsley.UK.Email.Example.csproj" />
     <Project Path="tests/Morsley.UK.Email.API.SystemTests/Morsley.UK.Email.API.SystemTests.csproj" Id="f2eca53b-28f0-62d1-5006-00f772386c29" />
     <Project Path="tests/Morsley.UK.Email.UnitTests/Morsley.UK.Email.UnitTests.csproj" />
   </Folder>

@@ -1,12 +1,12 @@
 const int NumberOfReadAttempts = 5;
 const int NumberOfSecondsInbetweenAttempts = 3;
 
-Console.WriteLine("Running Morsley.UK.Email.Console\n");
+Console.WriteLine("Running Morsley.UK.Email.Example\n");
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((ctx, cfg) =>
     {
-        cfg.AddJsonFile("AppSettings.Console.json", optional: false, reloadOnChange: true);
+        cfg.AddJsonFile("AppSettings.Example.json", optional: false, reloadOnChange: true);
         cfg.AddUserSecrets<Program>();
         cfg.AddEnvironmentVariables();
     })
@@ -18,7 +18,7 @@ var host = Host.CreateDefaultBuilder(args)
 
 var unique = Guid.NewGuid();
 var emailTo = host.Services.GetRequiredService<IConfiguration>()["Data:ToAddress"];
-var emailSubject = $"Morsley.UK.Email.Console - {unique}";
+var emailSubject = $"Morsley.UK.Email.Example - {unique}";
 var emailBody = $"Unique: {unique}";
 
 var sender = host.Services.GetRequiredService<IEmailSender>();
@@ -32,8 +32,8 @@ var message = new Morsley.UK.Email.Common.Models.EmailMessage
 var empty = new Morsley.UK.Email.Common.Models.EmailMessage 
 { 
     To = [ emailTo ], 
-    Subject = $"Morsley.UK.Email.Console - {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss:fff")}", 
-    TextBody = $"Unique: {Guid.NewGuid}"
+    Subject = $"Morsley.UK.Email.Example - {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss:fff")}", 
+    TextBody = $"Unique: {Guid.NewGuid()}"
 };
 
 Console.WriteLine("============================== SENDING ==============================");
