@@ -22,19 +22,16 @@ Prerequisites
 ```JSON
 {
   "ImapSettings": {
-    "Username": "john@morsley.uk",
-    "Password": "W8r!xB2z@pT7f#M9kV3q*eSdY"
+    "Username": "",
+    "Password": ""
   },
   "SmtpSettings": {
-    "Username": "john@morsley.uk",
-    "Password": "W8r!xB2z@pT7f#M9kV3q*eSdY",
-    "FromAddress": "john@morsley.uk"
+    "Username": "",
+    "Password": "",
+    "FromAddress": ""
   },
-  "Data": {
-    "ToAddress": "zjohn@morsley.ukz"
-  },
-  "TestSettings": {
-    "ToEmailAddress": "john@morsley.uk"
+  "SystemTestSettings": {
+    "ToEmailAddress": ""
   }
 }
 ```    
