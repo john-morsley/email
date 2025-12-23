@@ -1,7 +1,7 @@
 namespace Morsley.UK.Email.API.SystemTests;
 
 [TestFixture]
-public class EmailApiTests : EmailApiTestsBase
+public class EmailControllerApiTests : EmailApiTestsBase
 {
     [Test]
     // Given: We have a valid email
@@ -11,7 +11,7 @@ public class EmailApiTests : EmailApiTestsBase
     public async Task Send_Email()
     {
         // Arrange
-        var to = new List<string> { TestSettings.TestEmailAddress };
+        var to = new List<string> { SystemTestSettings.ToEmailAddress };
         var fullDateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
         var subject = $"Morsley.UK.Email.SystemTests - {fullDateTime}";
         var body = $"This is a test email from Morsley.UK.Email.SystemTests sent on {fullDateTime}";
@@ -33,6 +33,12 @@ public class EmailApiTests : EmailApiTestsBase
 
         // Act
         var sendResponse = await Client.PostAsync("/api/email", content);
+
+        if (!sendResponse.IsSuccessStatusCode)
+        {
+            var errorBody = await sendResponse.Content.ReadAsStringAsync();
+            Assert.Fail($"POST /api/email failed with {(int)sendResponse.StatusCode} {sendResponse.StatusCode}. Body: {errorBody}");
+        }
 
         // Assert
         sendResponse.ShouldNotBeNull();
@@ -70,7 +76,7 @@ public class EmailApiTests : EmailApiTestsBase
         // Send the email...
 
         // Arrange
-        var to = new List<string> { TestSettings.TestEmailAddress };
+        var to = new List<string> { SystemTestSettings.ToEmailAddress };
         var fullDateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
         var subject = $"Morsley.UK.Email.SystemTests - {fullDateTime}";
         var body = $"This is a test email from integration tests. ({fullDateTime})";
@@ -92,6 +98,12 @@ public class EmailApiTests : EmailApiTestsBase
 
         // Act 1
         var sendResponse = await Client.PostAsync("/api/email", content);
+
+        if (!sendResponse.IsSuccessStatusCode)
+        {
+            var errorBody = await sendResponse.Content.ReadAsStringAsync();
+            Assert.Fail($"POST /api/email failed with {(int)sendResponse.StatusCode} {sendResponse.StatusCode}. Body: {errorBody}");
+        }
 
         // Assert 1
         sendResponse.ShouldNotBeNull();
@@ -222,7 +234,7 @@ public class EmailApiTests : EmailApiTestsBase
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.Test.json")
-            .AddUserSecrets<EmailApiTests>()
+            .AddUserSecrets<EmailControllerApiTests>()
             .Build();
 
         var databaseId = configuration.GetValue<string>("CosmosDb:DatabaseName");
@@ -258,7 +270,7 @@ public class EmailApiTests : EmailApiTestsBase
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.Test.json")
-            .AddUserSecrets<EmailApiTests>()
+            .AddUserSecrets<EmailControllerApiTests>()
             .Build();
 
         var databaseId = configuration.GetValue<string>("CosmosDb:DatabaseName");

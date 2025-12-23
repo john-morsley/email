@@ -8,7 +8,7 @@ public abstract class EmailApiTestsBase
     protected CosmosEmulatorFixture CosmosFixture = null!;
     protected WebApplicationFactory<Program> Factory = null!;
     protected HttpClient Client = null!;
-    protected TestSettings TestSettings = null!;
+    protected SystemTestSettings SystemTestSettings = null!;
     protected CosmosDbSettings CosmosDbSettings = null!;
     protected Faker Faker = new Faker();
 
@@ -21,12 +21,17 @@ public abstract class EmailApiTestsBase
 
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.Test.json")
-            .AddUserSecrets<EmailApiTests>()
+            .AddJsonFile("appsettings.SystemTest.json")
+            .AddUserSecrets<EmailControllerApiTests>()
             .Build();
 
-        TestSettings = new TestSettings();
-        configuration.GetSection("TestSettings").Bind(TestSettings);
+        SystemTestSettings = new SystemTestSettings();
+        configuration.GetSection("TestSettings").Bind(SystemTestSettings);
+
+        if (string.IsNullOrWhiteSpace(SystemTestSettings.ToEmailAddress))
+        {
+            throw new InvalidOperationException("TestSettings:TestEmailAddress must be set to a valid email address (via user-secrets or appsettings.Test.json). A blank/invalid address causes POST /api/email to return 400 due to model validation.");
+        }
 
         CosmosDbSettings = new CosmosDbSettings();
         configuration.GetSection("CosmosDb").Bind(CosmosDbSettings);
@@ -55,7 +60,7 @@ public abstract class EmailApiTestsBase
                 config.AddJsonFile(testConfigPath, optional: false, reloadOnChange: false);
                 
                 // Add user secrets for sensitive data (SMTP/IMAP credentials)
-                config.AddUserSecrets<EmailApiTests>();
+                config.AddUserSecrets<EmailControllerApiTests>();
                 
                 // Override Cosmos settings with test container values
                 config.AddInMemoryCollection(new Dictionary<string, string?>
@@ -95,7 +100,10 @@ public abstract class EmailApiTestsBase
             });
         });
 
-        Client = Factory.CreateClient();
+        Client = Factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            BaseAddress = new Uri("https://localhost")
+        });
     }
 
     [TearDown]

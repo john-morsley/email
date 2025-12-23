@@ -2,7 +2,7 @@ namespace Morsley.UK.Email.Common.Models;
 
 public class EmailMessage
 {
-    public string? Id { get; set; }
+    public string Id { get; set; }
 
     public List<string> To { get; set; } = new();
 

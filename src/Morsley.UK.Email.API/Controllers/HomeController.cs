@@ -44,7 +44,7 @@ public class HomeController : Controller
         details = [];
 
         var morsleyUkCosmosDbEndpoint = _configuration["CosmosDb:Endpoint"];
-        details.Add($"MorsleyUk--CosmosDb--Endpoint: {morsleyUkCosmosDbEndpoint.ToMaskedSecret()}");
+        details.Add($"MorsleyUk--CosmosDb--Endpoint: {morsleyUkCosmosDbEndpoint}");
 
         var morsleyUkCosmosDbPrimaryReadKey = _configuration["CosmosDb:PrimaryReadKey"];
         details.Add($"MorsleyUk--CosmosDb--PrimaryReadKey: {morsleyUkCosmosDbPrimaryReadKey.ToMaskedSecret()}");

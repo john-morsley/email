@@ -93,5 +93,5 @@ public class CosmosDbOptions
 
     public string SentEmailsContainerName { get; set; } = "emails-sent";
 
-    public string ReceivedEmailsContainerName { get; set; } = "emails-inbox";
+    public string ReceivedEmailsContainerName { get; set; } = "emails-received";
 }

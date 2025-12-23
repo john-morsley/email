@@ -1,9 +1,49 @@
-﻿using Morsley.UK.Email.Models;
-
-namespace Morsley.UK.Email;
+﻿namespace Morsley.UK.Email;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddEmailReader(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string sectionName = "ImapSettings")
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        services
+            .AddOptions<ImapSettings>()
+            .Bind(configuration.GetSection(sectionName))
+            .Validate(s => !string.IsNullOrWhiteSpace(s.Server), "Imap:Server is required")
+            .Validate(s => s.Port > 0, "Imap:Port must be > 0")
+            .Validate(s => !string.IsNullOrWhiteSpace(s.Username), "SmtpSettings:Username is required")
+            .Validate(s => !string.IsNullOrWhiteSpace(s.Password), "SmtpSettings:Password is required")
+
+            .ValidateOnStart();
+
+        services.AddSingleton<IEmailReader, EmailReader>();
+        return services;
+    }
+
+    public static IServiceCollection AddEmailReader(
+        this IServiceCollection services,
+        Action<ImapSettings> configure)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        services
+            .AddOptions<ImapSettings>()
+            .Configure(configure)
+            .Validate(s => !string.IsNullOrWhiteSpace(s.Server), "Mail:Host is required")
+            .Validate(s => s.Port > 0, "Mail:Port must be > 0")
+            .Validate(s => !string.IsNullOrWhiteSpace(s.Username), "SmtpSettings:Username is required")
+            .Validate(s => !string.IsNullOrWhiteSpace(s.Password), "SmtpSettings:Password is required")
+            .ValidateOnStart();
+
+        services.AddSingleton<IEmailReader, EmailReader>();
+        return services;
+    }
+
     public static IServiceCollection AddEmailSender(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -47,45 +87,4 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddEmailReader(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        string sectionName = "ImapSettings")
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        services
-            .AddOptions<ImapSettings>()
-            .Bind(configuration.GetSection(sectionName))
-            .Validate(s => !string.IsNullOrWhiteSpace(s.Server), "Imap:Server is required")
-            .Validate(s => s.Port > 0, "Imap:Port must be > 0")
-            .Validate(s => !string.IsNullOrWhiteSpace(s.Username), "SmtpSettings:Username is required")
-            .Validate(s => !string.IsNullOrWhiteSpace(s.Password), "SmtpSettings:Password is required")
-
-            .ValidateOnStart();
-
-        services.AddSingleton<IEmailReader, EmailReader>();
-        return services;
-    }
-
-    public static IServiceCollection AddEmailReader(
-        this IServiceCollection services,
-        Action<ImapSettings> configure)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configure);
-
-        services
-            .AddOptions<ImapSettings>()
-            .Configure(configure)
-            .Validate(s => !string.IsNullOrWhiteSpace(s.Server), "Mail:Host is required")
-            .Validate(s => s.Port > 0, "Mail:Port must be > 0")
-            .Validate(s => !string.IsNullOrWhiteSpace(s.Username), "SmtpSettings:Username is required")
-            .Validate(s => !string.IsNullOrWhiteSpace(s.Password), "SmtpSettings:Password is required")
-            .ValidateOnStart();
-
-        services.AddSingleton<IEmailReader, EmailReader>();
-        return services;
-    }
 }

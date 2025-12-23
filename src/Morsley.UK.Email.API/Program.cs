@@ -1,6 +1,3 @@
-using Morsley.UK.Email.API.Validators;
-using Morsley.UK.Email.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
@@ -17,6 +14,7 @@ builder
         .Bind(builder.Configuration.GetSection("SmtpSettings"))
         .ValidateOnStart();
 
+builder.Services.AddSingleton<IValidateOptions<ImapSettings>, ImapSettingsValidator>();
 builder.Services.AddSingleton<IValidateOptions<SmtpSettings>, SmtpSettingsValidator>();
 
 builder.Services.AddControllersWithViews();
@@ -62,7 +60,6 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Morsley UK Email API");
-    options.InjectStylesheet("/css/swagger-dark.css");
 });
 
 app.UseHttpsRedirection();
@@ -70,9 +67,9 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();
+
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHealthChecks("/health", new HealthCheckOptions
 {

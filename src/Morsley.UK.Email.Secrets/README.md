@@ -14,7 +14,7 @@ Configuration expectations:
   "KeyVault": {
     "Name": "morsley-uk-key-vault"
   },
-  "test-secret": "[This value will come from the Azure KeyVault]",
+  "morsley-uk-cosmos-db-endpoint": "[This value will come from the Azure KeyVault]",
   "morsley-uk-cosmos-db-primary-read-write-key": "[This value will come from the Azure KeyVault]",
   "morsley-uk-cosmos-db-secondary-read-write-key": "[This value will come from the Azure KeyVault]",
   "morsley-uk-cosmos-db-primary-read-key": "[This value will come from the Azure KeyVault]",

@@ -1,6 +1,6 @@
 namespace Morsley.UK.Email.API.SystemTests;
 
-public class TestSettings
+public class SystemTestSettings
 {
-    public string TestEmailAddress { get; set; } = string.Empty;
+    public string ToEmailAddress { get; set; } = string.Empty;
 }

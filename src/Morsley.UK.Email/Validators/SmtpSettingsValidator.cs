@@ -1,5 +1,3 @@
-using Morsley.UK.Email.Models;
-
 namespace Morsley.UK.Email.API.Validators;
 
 public class SmtpSettingsValidator : IValidateOptions<SmtpSettings>
