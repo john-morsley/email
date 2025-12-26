@@ -58,5 +58,7 @@ public class EmailSender : IEmailSender
         {
             await client.DisconnectAsync(true, token);
         }
+
+        message.From = settings.FromAddress;
     }
 }

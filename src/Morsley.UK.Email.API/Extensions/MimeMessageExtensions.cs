@@ -10,6 +10,14 @@ public static class MimeMessageExtensions
             SentAt = mimeMessage.Date.DateTime != DateTime.MinValue ? mimeMessage.Date.DateTime : DateTime.UtcNow
         };
 
+        if (mimeMessage.From != null)
+        {
+            foreach (var address in mimeMessage.From.OfType<MailboxAddress>())
+            {
+                sentEmail.From = address.Address;
+            }
+        }
+
         if (mimeMessage.To != null)
         {
             foreach (var address in mimeMessage.To.OfType<MailboxAddress>())

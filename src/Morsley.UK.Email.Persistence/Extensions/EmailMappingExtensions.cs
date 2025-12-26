@@ -6,9 +6,9 @@ public static class EmailMappingExtensions
     {
         if (message is null) throw new ArgumentNullException(nameof(message));
 
-        var document = new Documents.EmailDocument
+        var document = new EmailDocument
         {
-            
+            From = message.From,
             To = new List<string>(message.To),
             Cc = new List<string>(message.Cc),
             Bcc = new List<string>(message.Bcc),
@@ -32,11 +32,12 @@ public static class EmailMappingExtensions
         return document;
     }
 
-    public static Common.Models.EmailMessage ToSentEmailMessage(this Documents.EmailDocument document)
+    public static Common.Models.EmailMessage ToSentEmailMessage(this EmailDocument document)
     {
         return new Common.Models.EmailMessage
         {
             Id = document.Id,
+            From = document.From,
             To = new List<string>(document.To),
             Cc = new List<string>(document.Cc),
             Bcc = new List<string>(document.Bcc),
@@ -54,7 +55,7 @@ public static class EmailMappingExtensions
     /// <summary>
     /// Converts a collection of EmailDocuments to EmailMessages
     /// </summary>
-    public static IEnumerable<Common.Models.EmailMessage> ToSentEmailMessages(this IEnumerable<Documents.EmailDocument> documents)
+    public static IEnumerable<Common.Models.EmailMessage> ToSentEmailMessages(this IEnumerable<EmailDocument> documents)
     {
         return documents.Select(x => x.ToSentEmailMessage());
     }

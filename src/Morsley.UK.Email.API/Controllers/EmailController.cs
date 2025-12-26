@@ -53,6 +53,7 @@ public class EmailController(
             
             var sent = sendable.ToEmailMessage();
 
+            sent.From = message.From;
             sent.SentAt = DateTime.UtcNow;
             
             var createdId = await sentEmailPersistenceService.SaveEmailAsync(sent);

@@ -39,20 +39,22 @@ var empty = new Morsley.UK.Email.Common.Models.EmailMessage
 Console.WriteLine("============================== SENDING ==============================");
 try
 {
-    var i = 1;
+    //var i = 1;
 
     Console.WriteLine("Sending emails...");
 
-    Console.WriteLine("");
+    Console.WriteLine("2 dummies");
     await sender.SendAsync(empty);
     await sender.SendAsync(empty);
-        
+
+    Console.WriteLine("1 test");
     Console.WriteLine($"To: {emailTo}");
     Console.WriteLine($"Subject: {emailSubject}");
     Console.WriteLine($"Body: {emailBody}");
 
     await sender.SendAsync(message);
 
+    Console.WriteLine("2 more dummies");
     await sender.SendAsync(empty);
     await sender.SendAsync(empty);
 
