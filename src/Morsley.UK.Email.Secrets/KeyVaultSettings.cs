@@ -8,8 +8,7 @@ public class KeyVaultSettings
     {
         get
         {
-            if (string.IsNullOrEmpty(_name))
-                throw new InvalidOperationException("KeyVault:Name cannot be empty.");
+            if (string.IsNullOrEmpty(_name)) throw new InvalidOperationException("KeyVault:Name cannot be empty.");
             return _name;
         }
         set

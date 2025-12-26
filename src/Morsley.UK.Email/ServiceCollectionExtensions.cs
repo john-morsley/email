@@ -17,10 +17,10 @@ public static class ServiceCollectionExtensions
             .Validate(s => s.Port > 0, "Imap:Port must be > 0")
             .Validate(s => !string.IsNullOrWhiteSpace(s.Username), "SmtpSettings:Username is required")
             .Validate(s => !string.IsNullOrWhiteSpace(s.Password), "SmtpSettings:Password is required")
-
             .ValidateOnStart();
 
         services.AddSingleton<IEmailReader, EmailReader>();
+
         return services;
     }
 

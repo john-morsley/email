@@ -10,6 +10,12 @@ builder.ConfigureAzureKeyVault();
 
 builder
     .Services
+        .AddOptions<ImapSettings>()
+        .Bind(builder.Configuration.GetSection("ImapSettings"))
+        .ValidateOnStart();
+
+builder
+    .Services
         .AddOptions<SmtpSettings>()
         .Bind(builder.Configuration.GetSection("SmtpSettings"))
         .ValidateOnStart();
@@ -62,7 +68,10 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Morsley UK Email API");
 });
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseRouting();
 
 app.UseAuthorization();
