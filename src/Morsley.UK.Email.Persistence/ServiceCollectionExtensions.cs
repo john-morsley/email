@@ -57,32 +57,22 @@ public static class ServiceCollectionExtensions
             return new CosmosClient(options.Endpoint, options.PrimaryReadWriteKey, cosmosClientOptions);
         });
 
-        // Register sent email persistence service
-        services.AddScoped<ISentEmailPersistenceService>(serviceProvider =>
+        services.AddScoped<IEmailSentPersistenceService>(serviceProvider =>
         {
             var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
             var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
-            var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbEmailPersistenceService>>();
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             
-            return new CosmosDbEmailPersistenceService(
-                cosmosClient, 
-                options.DatabaseName, 
-                options.SentEmailsContainerName, 
-                logger);
+            return new CosmosDbEmailSentPersistenceService(cosmosClient, options, loggerFactory);
         });
 
-        // Register received email persistence service
-        services.AddScoped<IReceivedEmailPersistenceService>(serviceProvider =>
+        services.AddScoped<IEmailReceivedPersistenceService>(serviceProvider =>
         {
             var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
             var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
-            var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbEmailPersistenceService>>();
-            
-            return new CosmosDbEmailPersistenceService(
-                cosmosClient, 
-                options.DatabaseName, 
-                options.ReceivedEmailsContainerName, 
-                logger);
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+            return new CosmosDbEmailReceivedPersistenceService(cosmosClient, options, loggerFactory);
         });
 
         return services;
@@ -141,37 +131,23 @@ public static class ServiceCollectionExtensions
             return new CosmosClient(options.Endpoint, options.PrimaryReadWriteKey, cosmosClientOptions);
         });
 
-        // Register sent email persistence service
-        services.AddScoped<ISentEmailPersistenceService>(serviceProvider =>
+        services.AddScoped<IEmailSentPersistenceService>(serviceProvider =>
         {
             var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
             var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
-            var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbEmailPersistenceService>>();
-            
-            return new CosmosDbEmailPersistenceService(
-                cosmosClient, 
-                options.DatabaseName, 
-                options.SentEmailsContainerName, 
-                logger);
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+            return new CosmosDbEmailSentPersistenceService(cosmosClient, options, loggerFactory);
         });
 
-        // Register received email persistence service
-        services.AddScoped<IReceivedEmailPersistenceService>(serviceProvider =>
+        services.AddScoped<IEmailReceivedPersistenceService>(serviceProvider =>
         {
             var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
             var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
-            var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbEmailPersistenceService>>();
-            
-            return new CosmosDbEmailPersistenceService(
-                cosmosClient, 
-                options.DatabaseName, 
-                options.ReceivedEmailsContainerName, 
-                logger);
-        });
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-        // Keep backward compatibility - register as sent emails by default
-        services.AddScoped<IEmailPersistenceService>(serviceProvider =>
-            serviceProvider.GetRequiredService<ISentEmailPersistenceService>());
+            return new CosmosDbEmailReceivedPersistenceService(cosmosClient, options, loggerFactory);
+        });
 
         return services;
     }

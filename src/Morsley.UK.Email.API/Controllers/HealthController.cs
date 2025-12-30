@@ -4,7 +4,7 @@ namespace Morsley.UK.Email.API.Controllers;
 /// Health check controller for monitoring application status
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/health")]
 public class HealthController : ControllerBase
 {
     private readonly HealthCheckService _healthCheckService;

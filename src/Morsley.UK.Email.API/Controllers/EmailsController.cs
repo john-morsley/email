@@ -5,13 +5,14 @@ namespace Morsley.UK.Email.API.Controllers;
 public class EmailsController(
     ILogger<EmailsController> logger,
     IEmailReader emailReader,
-    IReceivedEmailPersistenceService receivedEmailPersistenceService) : ControllerBase
+    IEmailReceivedPersistenceService receivedEmailPersistenceService,
+    IEmailSentPersistenceService sentEmailPersistenceService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] Common.Models.PaginationRequest? pagination = null)
+    [Route("received/page")]
+    public async Task<IActionResult> GetReceivedPageAsync([FromQuery] PaginationRequest? pagination = null)
     {
-        // Use default pagination if not provided
-        pagination ??= new Common.Models.PaginationRequest();
+        pagination ??= new PaginationRequest();
 
         if (!ModelState.IsValid)
         {
@@ -22,16 +23,51 @@ public class EmailsController(
 
         try
         {
-            // First ensure we have the latest emails persisted
-            await GetAllAndPersist();
+            await FetchAllAndPersist();
 
-            // Get paginated emails from persistence
-            var paginatedEmails = await receivedEmailPersistenceService.GetEmailsAsync(pagination);
+            var paginated = await receivedEmailPersistenceService.GetPageAsync(pagination);
 
-            logger.LogInformation("Retrieved {Count} emails (Page {Page}/{TotalPages})", 
-                paginatedEmails.Count, paginatedEmails.Page, paginatedEmails.TotalPages);
+            logger.LogInformation(
+                "Retrieved {Count} emails (Page {Page}/{TotalPages})", 
+                paginated.Count, 
+                paginated.Page, 
+                paginated.TotalPages);
             
-            return Ok(paginatedEmails);
+            return Ok(paginated);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving emails");
+            return StatusCode(500, "An error occurred while retrieving emails");
+        }
+    }
+
+    [HttpGet]
+    [Route("sent/page")]
+    public async Task<IActionResult> GetSentPageAsync([FromQuery] PaginationRequest? pagination = null)
+    {
+        pagination ??= new PaginationRequest();
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        logger.LogInformation("Getting emails with pagination - Page: {Page}, PageSize: {PageSize}", pagination.Page, pagination.PageSize);
+
+        try
+        {
+            await FetchAllAndPersist();
+
+            var paginated = await sentEmailPersistenceService.GetPageAsync(pagination);
+
+            logger.LogInformation(
+                "Retrieved {Count} emails (Page {Page}/{TotalPages})",
+                paginated.Count,
+                paginated.Page,
+                paginated.TotalPages);
+
+            return Ok(paginated);
         }
         catch (Exception ex)
         {
@@ -68,7 +104,7 @@ public class EmailsController(
     //    }
     //}
 
-    private async Task<IEnumerable<Common.Models.EmailMessage>> GetAllAndPersist()
+    private async Task FetchAllAndPersist()
     {
         var emails = await emailReader.FetchAsync();
 
@@ -79,17 +115,17 @@ public class EmailsController(
             await PersistEmail(email, batchNumber);
         }
 
-        var receivedEmails = await receivedEmailPersistenceService.GetEmailsAsync();
+        //var receivedEmails = await receivedEmailPersistenceService.GetEmailsAsync();
 
-        return receivedEmails;
+        //return receivedEmails;
     }
 
-    private async Task PersistEmail(Common.Models.EmailMessage email)
+    private async Task PersistEmail(EmailMessage email)
     {
-        await receivedEmailPersistenceService.SaveEmailAsync(email);
+        await receivedEmailPersistenceService.SaveAsync(email);
     }
 
-    private async Task PersistEmail(MimeKit.MimeMessage message, long batchNumber)
+    private async Task PersistEmail(MimeMessage message, long batchNumber)
     {
         var email = message.ToSentEmailMessage();
         email.BatchNumber = batchNumber;
