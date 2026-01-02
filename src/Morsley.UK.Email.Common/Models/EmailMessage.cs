@@ -22,5 +22,5 @@ public class EmailMessage
 
     public long? BatchNumber { get; set; }
 
-    public DateTime? Created { get; set; }
+    public DateTime? CreatedUtc { get; set; }
 }

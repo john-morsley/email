@@ -108,7 +108,7 @@ public abstract class CosmosDbEmailPersistenceService
                 $"""
                   SELECT *
                     FROM c
-                ORDER BY c.Created DESC
+                ORDER BY c.CreatedUtc DESC
                   OFFSET {pagination.Skip}
                    LIMIT {pagination.PageSize}
                 """;

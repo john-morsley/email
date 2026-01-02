@@ -251,7 +251,7 @@ public class EmailControllerApiTests : EmailApiTestsBase
         persistedSentEmail.TextBody.ShouldBe(body, "Text body not match");        
         
         // Verify the email has a sent timestamp
-        persistedSentEmail.SentAt.ShouldNotBeNull("Email should have a SentAt timestamp");
+        persistedSentEmail.CreatedUtc.ShouldNotBeNull("Email should have a CreatedUtc timestamp");
 
         // Verify the email has a batch number
         persistedSentEmail.BatchNumber.ShouldBeNull("Email should NOT have a BatchNumber");
@@ -287,7 +287,7 @@ public class EmailControllerApiTests : EmailApiTestsBase
         persistedReceivedEmail.TextBody.Trim('\r', '\n').ShouldBe(body, "Text body not match");
 
         // Verify the email has a sent timestamp
-        persistedReceivedEmail.SentAt.ShouldNotBeNull("Email should have a SentAt timestamp");
+        persistedReceivedEmail.CreatedUtc.ShouldNotBeNull("Email should have a CreatedUtc timestamp");
 
         // Verify the email has a batch number
         persistedReceivedEmail.BatchNumber.ShouldNotBeNull("Email should have a BatchNumber");

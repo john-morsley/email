@@ -2,7 +2,7 @@ namespace Morsley.UK.Email.Persistence.Documents;
 
 public class EmailDocument
 {
-    private DateTime _created = DateTime.UtcNow;
+    private DateTime _createdUtc = DateTime.UtcNow;
 
     [JsonProperty("id")]
     public string Id { get; set; } = Uuid.NewDatabaseFriendly(UUIDNext.Database.Other).ToString();
@@ -24,12 +24,12 @@ public class EmailDocument
 
     public string? HtmlBody { get; set; }
 
-    public DateTime Created
+    public DateTime CreatedUtc
     { 
-        get => _created;
+        get => _createdUtc;
         set 
         {
-            _created = value;
+            _createdUtc = value;
         }
     }
 
