@@ -6,8 +6,8 @@ public static class MimeMessageExtensions
     {
         var sentEmail = new EmailMessage
         {
-            Subject = mimeMessage.Subject ?? string.Empty,
-            SentAt = mimeMessage.Date.DateTime != DateTime.MinValue ? mimeMessage.Date.DateTime : DateTime.UtcNow
+            Subject = mimeMessage.Subject ?? string.Empty//,
+            //SentAt = mimeMessage.Date.DateTime != DateTime.MinValue ? mimeMessage.Date.DateTime : DateTime.UtcNow
         };
 
         if (mimeMessage.From != null)

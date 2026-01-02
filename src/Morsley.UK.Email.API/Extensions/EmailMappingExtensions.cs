@@ -11,8 +11,8 @@ public static class EmailMappingExtensions
             Bcc = new List<string>(sendable.Bcc),
             Subject = sendable.Subject,
             TextBody = sendable.TextBody,
-            HtmlBody = sendable.HtmlBody,
-            SentAt = DateTime.UtcNow
+            HtmlBody = sendable.HtmlBody//,
+            //SentAt = DateTime.UtcNow
         };
     }
      public static IEnumerable<EmailMessage> ToEmailMessages(this IEnumerable<SendableEmailMessage> sendableMessages)

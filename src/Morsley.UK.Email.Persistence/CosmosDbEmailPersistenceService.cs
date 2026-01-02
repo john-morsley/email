@@ -86,7 +86,7 @@ public abstract class CosmosDbEmailPersistenceService
         }
     }
 
-    public async Task<Common.Models.PaginatedResponse<Common.Models.EmailMessage>> GetPageAsync(Common.Models.PaginationRequest pagination, CancellationToken cancellationToken = default)
+    public async Task<PaginatedResponse<EmailMessage>> GetPageAsync(PaginationRequest pagination, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -108,7 +108,7 @@ public abstract class CosmosDbEmailPersistenceService
                 $"""
                   SELECT *
                     FROM c
-                ORDER BY c.CreatedAt DESC
+                ORDER BY c.Created DESC
                   OFFSET {pagination.Skip}
                    LIMIT {pagination.PageSize}
                 """;

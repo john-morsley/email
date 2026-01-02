@@ -2,7 +2,7 @@ namespace Morsley.UK.Email.Common.Models;
 
 public class EmailMessage
 {
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     public string From { get; set; } = string.Empty;
 
@@ -18,7 +18,9 @@ public class EmailMessage
 
     public string? HtmlBody { get; set; }
 
-    public DateTime? SentAt { get; set; }
+    //public DateTime? SentAt { get; set; }
 
     public long? BatchNumber { get; set; }
+
+    public DateTime? Created { get; set; }
 }

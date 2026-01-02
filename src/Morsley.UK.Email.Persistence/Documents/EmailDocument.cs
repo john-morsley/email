@@ -1,11 +1,8 @@
 namespace Morsley.UK.Email.Persistence.Documents;
 
-/// <summary>
-/// CosmosDB-specific document model for email persistence
-/// </summary>
 public class EmailDocument
 {
-    private DateTime _createdAt = DateTime.UtcNow;
+    private DateTime _created = DateTime.UtcNow;
 
     [JsonProperty("id")]
     public string Id { get; set; } = Uuid.NewDatabaseFriendly(UUIDNext.Database.Other).ToString();
@@ -27,12 +24,12 @@ public class EmailDocument
 
     public string? HtmlBody { get; set; }
 
-    public DateTime CreatedAt 
+    public DateTime Created
     { 
-        get => _createdAt;
+        get => _created;
         set 
         {
-            _createdAt = value;
+            _created = value;
         }
     }
 
