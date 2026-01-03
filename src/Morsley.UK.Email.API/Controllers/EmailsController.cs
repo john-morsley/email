@@ -5,8 +5,8 @@ namespace Morsley.UK.Email.API.Controllers;
 public class EmailsController(
     ILogger<EmailsController> logger,
     IEmailReader emailReader,
-    IEmailReceivedPersistenceService receivedEmailPersistenceService,
-    IEmailSentPersistenceService sentEmailPersistenceService) : ControllerBase
+    IEmailReceivedPersistenceService receivedPersistenceService,
+    IEmailSentPersistenceService sentPersistenceService) : ControllerBase
 {
     [HttpGet]
     [Route("received/page")]
@@ -25,7 +25,7 @@ public class EmailsController(
         {
             await FetchAllAndPersist();
 
-            var paginated = await receivedEmailPersistenceService.GetPageAsync(pagination);
+            var paginated = await receivedPersistenceService.GetPageAsync(pagination);
 
             logger.LogInformation(
                 "Retrieved {Count} emails (Page {Page}/{TotalPages})", 
@@ -59,7 +59,7 @@ public class EmailsController(
         {
             await FetchAllAndPersist();
 
-            var paginated = await sentEmailPersistenceService.GetPageAsync(pagination);
+            var paginated = await sentPersistenceService.GetPageAsync(pagination);
 
             logger.LogInformation(
                 "Retrieved {Count} emails (Page {Page}/{TotalPages})",
@@ -76,33 +76,42 @@ public class EmailsController(
         }
     }
 
-    //[HttpGet("{id}", Name = "get-by-id")]
-    //public async Task<IActionResult> GetById(string id)
-    //{
-    //    if (string.IsNullOrWhiteSpace(id))
-    //    {
-    //        return BadRequest("Email ID cannot be null or empty");
-    //    }
 
-    //    logger.LogInformation("Getting email with ID: {EmailId}", id);
+    [HttpDelete]
+    [Route("received/all")]
+    public async Task<IActionResult> DeleteAllReceived()
+    {
+        logger.LogInformation("Deleting all received emails");
 
-    //    try
-    //    {
-    //        var email = await persistenceService.GetEmailByIdAsync(id);
+        try
+        {
+            await receivedPersistenceService.DeleteAllAsync();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting all recieved emails");
+            return StatusCode(500, "An error occurred while deleting all recieved emails");
+        }
+    }
 
-    //        if (email == null)
-    //        {
-    //            return NotFound($"Email with ID {id} not found");
-    //        }
+    [HttpDelete]
+    [Route("sent/all")]
+    public async Task<IActionResult> DeleteAllSent()
+    {
+        logger.LogInformation("Deleting all sent emails");
 
-    //        return Ok(email);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        logger.LogError(ex, "Error retrieving email with ID: {EmailId}", id);
-    //        return StatusCode(500, "An error occurred while retrieving the email");
-    //    }
-    //}
+        try
+        {
+            await sentPersistenceService.DeleteAllAsync();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting all sent emails");
+            return StatusCode(500, "An error occurred while deleting all sent emails");
+        }
+    }
 
     private async Task FetchAllAndPersist()
     {
@@ -122,7 +131,7 @@ public class EmailsController(
 
     private async Task PersistEmail(EmailMessage email)
     {
-        await receivedEmailPersistenceService.SaveAsync(email);
+        await receivedPersistenceService.SaveAsync(email);
     }
 
     private async Task PersistEmail(MimeMessage message, long batchNumber)

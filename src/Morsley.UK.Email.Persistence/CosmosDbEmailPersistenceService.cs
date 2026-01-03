@@ -53,17 +53,19 @@ public abstract class CosmosDbEmailPersistenceService
             Logger.LogInformation("Retrieving email with ID: {EmailId}", id);
 
             // Since we don't know the partition key for the email, we need to query across partitions
+            var queryDefinition = new QueryDefinition(
+                    "SELECT * FROM c WHERE c.id = @id")
+                .WithParameter("@id", id);
+
             var query = _container.GetItemQueryIterator<EmailDocument>(
-                $"""
-                SELECT * " +
-                  FROM c " +
-                 WHERE c.id = '{id}'
-                """);
+                queryDefinition,
+                requestOptions: new QueryRequestOptions { MaxItemCount = 1 });
 
             while (query.HasMoreResults)
             {
                 var response = await query.ReadNextAsync();
                 var emailDocument = response.FirstOrDefault();
+
                 if (emailDocument != null)
                 {
                     Logger.LogInformation("Successfully retrieved email with ID: {EmailId}", id);
@@ -188,6 +190,56 @@ public abstract class CosmosDbEmailPersistenceService
         catch (Exception ex)
         {
             Logger.LogError(ex, "Unexpected error deleting email with ID: {EmailId}", id);
+            throw;
+        }
+    }
+
+    public async Task DeleteAllAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            Logger.LogInformation("Deleting all emails");
+
+            var queryDefinition = new QueryDefinition("SELECT VALUE c.id FROM c");
+
+            var query = _container.GetItemQueryIterator<string>(
+                queryDefinition,
+                requestOptions: new QueryRequestOptions { MaxItemCount = 100 });
+
+            var deletedCount = 0;
+
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync(cancellationToken);
+
+                foreach (var id in response)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    try
+                    {
+                        await _container.DeleteItemAsync<EmailDocument>(
+                            id,
+                            new PartitionKey(id),
+                            cancellationToken: cancellationToken);
+                        deletedCount++;
+                    }
+                    catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                    }
+                }
+            }
+
+            Logger.LogInformation("Successfully deleted all emails. Deleted count: {DeletedCount}", deletedCount);
+        }
+        catch (CosmosException ex)
+        {
+            Logger.LogError(ex, "Failed to delete all emails. Status: {Status}", ex.StatusCode);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error deleting all emails");
             throw;
         }
     }

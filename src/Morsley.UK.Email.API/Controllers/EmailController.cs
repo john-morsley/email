@@ -101,26 +101,51 @@ public class EmailController(
         }
     }
 
-    //[HttpDelete("{id}", Name = "delete-by-id")]
-    //public async Task<IActionResult> DeleteById(string id)
-    //{
-    //    logger.LogInformation("Deleting email with ID: {EmailId}", id);
+    [HttpDelete]
+    [Route("received/id")]
+    public async Task<IActionResult> DeleteReceivedById(string id)
+    {
+        logger.LogInformation("Deleting email with ID: {EmailId}", id);
 
-    //    try
-    //    {
-    //        var deleted = await persistenceService.DeleteEmailAsync(id);
-            
-    //        if (!deleted)
-    //        {
-    //            return NotFound($"Email with ID {id} not found");
-    //        }
-            
-    //        return NoContent();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        logger.LogError(ex, "Error deleting email with ID: {EmailId}", id);
-    //        return StatusCode(500, "An error occurred while deleting the email");
-    //    }
-    //}
+        try
+        {
+            var deleted = await receivedPersistenceService.DeleteByIdAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound($"Email with ID {id} not found");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting email with ID: {EmailId}", id);
+            return StatusCode(500, "An error occurred while deleting the email");
+        }
+    }
+
+    [HttpDelete]
+    [Route("sent/id")]
+    public async Task<IActionResult> DeleteSentById(string id)
+    {
+        logger.LogInformation("Deleting email with ID: {EmailId}", id);
+
+        try
+        {
+            var deleted = await sentPersistenceService.DeleteByIdAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound($"Email with ID {id} not found");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting email with ID: {EmailId}", id);
+            return StatusCode(500, "An error occurred while deleting the email");
+        }
+    }
 }
