@@ -8,6 +8,35 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\android-icon-144x144.png" />
+    <None Include="wwwroot\android-icon-192x192.png" />
+    <None Include="wwwroot\android-icon-36x36.png" />
+    <None Include="wwwroot\android-icon-48x48.png" />
+    <None Include="wwwroot\android-icon-72x72.png" />
+    <None Include="wwwroot\android-icon-96x96.png" />
+    <None Include="wwwroot\apple-icon-114x114.png" />
+    <None Include="wwwroot\apple-icon-120x120.png" />
+    <None Include="wwwroot\apple-icon-144x144.png" />
+    <None Include="wwwroot\apple-icon-152x152.png" />
+    <None Include="wwwroot\apple-icon-180x180.png" />
+    <None Include="wwwroot\apple-icon-57x57.png" />
+    <None Include="wwwroot\apple-icon-60x60.png" />
+    <None Include="wwwroot\apple-icon-72x72.png" />
+    <None Include="wwwroot\apple-icon-76x76.png" />
+    <None Include="wwwroot\apple-icon-precomposed.png" />
+    <None Include="wwwroot\apple-icon.png" />
+    <None Include="wwwroot\browserconfig.xml" />
+    <None Include="wwwroot\favicon-16x16.png" />
+    <None Include="wwwroot\favicon-32x32.png" />
+    <None Include="wwwroot\favicon-96x96.png" />
+    <None Include="wwwroot\favicon.ico" />
+    <None Include="wwwroot\ms-icon-144x144.png" />
+    <None Include="wwwroot\ms-icon-150x150.png" />
+    <None Include="wwwroot\ms-icon-310x310.png" />
+    <None Include="wwwroot\ms-icon-70x70.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.CosmosDb" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
