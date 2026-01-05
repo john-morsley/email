@@ -9,7 +9,7 @@ public class EmailReader : IEmailReader
         _options = options;
     }
 
-    public async Task<IReadOnlyList<MimeMessage>> FetchAsync(CancellationToken token = default)
+    public async Task<IReadOnlyList<MimeMessage>> FetchAsync(CancellationToken token)
     {
         var settings = _options.CurrentValue;
 

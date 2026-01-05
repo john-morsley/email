@@ -18,7 +18,7 @@ public abstract class CosmosDbEmailPersistenceService
 
     protected ILogger Logger { get; }
 
-    public async Task<string> SaveAsync(Common.Models.EmailMessage email, CancellationToken cancellationToken = default)
+    public async Task<string> SaveAsync(Common.Models.EmailMessage email, CancellationToken cancellationToken)
     {
         try
         {
@@ -28,7 +28,8 @@ public abstract class CosmosDbEmailPersistenceService
 
             var response = await _container.UpsertItemAsync(
                 emailDocument,
-                new PartitionKey(emailDocument.PartitionKey));
+                new PartitionKey(emailDocument.PartitionKey),
+                cancellationToken: cancellationToken);
 
             Logger.LogInformation("Successfully saved email with ID: {EmailId}. Request charge: {RequestCharge}", email.Id, response.RequestCharge);
 
@@ -46,7 +47,7 @@ public abstract class CosmosDbEmailPersistenceService
         }
     }
 
-    public async Task<Common.Models.EmailMessage?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<Common.Models.EmailMessage?> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         try
         {
@@ -63,7 +64,7 @@ public abstract class CosmosDbEmailPersistenceService
 
             while (query.HasMoreResults)
             {
-                var response = await query.ReadNextAsync();
+                var response = await query.ReadNextAsync(cancellationToken);
                 var emailDocument = response.FirstOrDefault();
 
                 if (emailDocument != null)
@@ -88,7 +89,7 @@ public abstract class CosmosDbEmailPersistenceService
         }
     }
 
-    public async Task<PaginatedResponse<EmailMessage>> GetPageAsync(PaginationRequest pagination, CancellationToken cancellationToken = default)
+    public async Task<PaginatedResponse<EmailMessage>> GetPageAsync(PaginationRequest pagination, CancellationToken cancellationToken)
     {
         try
         {
@@ -100,7 +101,7 @@ public abstract class CosmosDbEmailPersistenceService
             int totalCount = 0;
             while (countQuery.HasMoreResults)
             {
-                var countResponse = await countQuery.ReadNextAsync();
+                var countResponse = await countQuery.ReadNextAsync(cancellationToken);
                 totalCount = countResponse.FirstOrDefault();
                 break;
             }
@@ -121,7 +122,7 @@ public abstract class CosmosDbEmailPersistenceService
 
             while (query.HasMoreResults)
             {
-                var response = await query.ReadNextAsync();
+                var response = await query.ReadNextAsync(cancellationToken);
                 pageOfEmailDocuments.AddRange(response.ToList());
             }
 
@@ -155,7 +156,7 @@ public abstract class CosmosDbEmailPersistenceService
         }
     }
 
-    public async Task<bool> DeleteByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteByIdAsync(string id, CancellationToken cancellationToken)
     {
         try
         {
@@ -172,7 +173,8 @@ public abstract class CosmosDbEmailPersistenceService
             var emailDocument = email.ToDocument();
             await _container.DeleteItemAsync<EmailDocument>(
                 id,
-                new PartitionKey(emailDocument.PartitionKey));
+                new PartitionKey(emailDocument.PartitionKey),
+                cancellationToken: cancellationToken);
 
             Logger.LogInformation("Successfully deleted email with ID: {EmailId}", id);
             return true;
@@ -194,7 +196,7 @@ public abstract class CosmosDbEmailPersistenceService
         }
     }
 
-    public async Task DeleteAllAsync(CancellationToken cancellationToken = default)
+    public async Task DeleteAllAsync(CancellationToken cancellationToken)
     {
         try
         {

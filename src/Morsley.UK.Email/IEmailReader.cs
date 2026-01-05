@@ -2,5 +2,5 @@
 
 public interface IEmailReader
 {
-    Task<IReadOnlyList<MimeMessage>> FetchAsync(CancellationToken token = default);
+    Task<IReadOnlyList<MimeMessage>> FetchAsync(CancellationToken token);
 }

@@ -10,7 +10,7 @@ public class EmailsController(
 {
     [HttpGet]
     [Route("received/page")]
-    public async Task<IActionResult> GetReceivedPageAsync([FromQuery] PaginationRequest? pagination = null)
+    public async Task<IActionResult> GetReceivedPageAsync([FromQuery] PaginationRequest? pagination = null, CancellationToken cancellationToken = default)
     {
         pagination ??= new PaginationRequest();
 
@@ -23,9 +23,9 @@ public class EmailsController(
 
         try
         {
-            await FetchAllAndPersist();
+            await FetchAllAndPersist(cancellationToken);
 
-            var paginated = await receivedPersistenceService.GetPageAsync(pagination);
+            var paginated = await receivedPersistenceService.GetPageAsync(pagination, cancellationToken);
 
             logger.LogInformation(
                 "Retrieved {Count} emails (Page {Page}/{TotalPages})", 
@@ -44,7 +44,7 @@ public class EmailsController(
 
     [HttpGet]
     [Route("sent/page")]
-    public async Task<IActionResult> GetSentPageAsync([FromQuery] PaginationRequest? pagination = null)
+    public async Task<IActionResult> GetSentPageAsync([FromQuery] PaginationRequest? pagination = null, CancellationToken cancellationToken = default)
     {
         pagination ??= new PaginationRequest();
 
@@ -57,9 +57,9 @@ public class EmailsController(
 
         try
         {
-            await FetchAllAndPersist();
+            await FetchAllAndPersist(cancellationToken);
 
-            var paginated = await sentPersistenceService.GetPageAsync(pagination);
+            var paginated = await sentPersistenceService.GetPageAsync(pagination, cancellationToken);
 
             logger.LogInformation(
                 "Retrieved {Count} emails (Page {Page}/{TotalPages})",
@@ -76,16 +76,15 @@ public class EmailsController(
         }
     }
 
-
     [HttpDelete]
     [Route("received/all")]
-    public async Task<IActionResult> DeleteAllReceived()
+    public async Task<IActionResult> DeleteAllReceived(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting all received emails");
 
         try
         {
-            await receivedPersistenceService.DeleteAllAsync();
+            await receivedPersistenceService.DeleteAllAsync(cancellationToken);
             return NoContent();
         }
         catch (Exception ex)
@@ -97,13 +96,13 @@ public class EmailsController(
 
     [HttpDelete]
     [Route("sent/all")]
-    public async Task<IActionResult> DeleteAllSent()
+    public async Task<IActionResult> DeleteAllSent(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting all sent emails");
 
         try
         {
-            await sentPersistenceService.DeleteAllAsync();
+            await sentPersistenceService.DeleteAllAsync(cancellationToken);
             return NoContent();
         }
         catch (Exception ex)
@@ -113,31 +112,32 @@ public class EmailsController(
         }
     }
 
-    private async Task FetchAllAndPersist()
+    private async Task FetchAllAndPersist(CancellationToken cancellationToken = default)
     {
-        var emails = await emailReader.FetchAsync();
+        var emails = await emailReader.FetchAsync(cancellationToken);
 
         var batchNumber = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
         foreach (var email in emails)
         {
-            await PersistEmail(email, batchNumber);
+            await PersistEmail(email, batchNumber, cancellationToken);
         }
-
-        //var receivedEmails = await receivedEmailPersistenceService.GetEmailsAsync();
-
-        //return receivedEmails;
     }
 
-    private async Task PersistEmail(EmailMessage email)
+    //private async Task PersistEmail(EmailMessage email, long batchNumber, CancellationToken cancellationToken = default)
+    //{
+    //    email.BatchNumber = batchNumber;
+    //    await PersistEmail(email, cancellationToken);
+    //}
+
+    private async Task PersistEmail(EmailMessage email, CancellationToken cancellationToken)
     {
-        await receivedPersistenceService.SaveAsync(email);
+        await receivedPersistenceService.SaveAsync(email, cancellationToken);
     }
-
-    private async Task PersistEmail(MimeMessage message, long batchNumber)
+    private async Task PersistEmail(MimeMessage message, long batchNumber, CancellationToken cancellationToken = default)
     {
         var email = message.ToSentEmailMessage();
         email.BatchNumber = batchNumber;
-        await PersistEmail(email);
+        await PersistEmail(email, cancellationToken);
     }
 }

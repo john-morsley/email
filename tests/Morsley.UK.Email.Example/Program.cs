@@ -1,3 +1,5 @@
+var cancellationToken = new CancellationTokenSource().Token;
+
 const int NumberOfReadAttempts = 5;
 const int NumberOfSecondsInbetweenAttempts = 3;
 
@@ -44,19 +46,19 @@ try
     Console.WriteLine("Sending emails...");
 
     Console.WriteLine("2 dummies");
-    await sender.SendAsync(empty);
-    await sender.SendAsync(empty);
+    await sender.SendAsync(empty, cancellationToken);
+    await sender.SendAsync(empty, cancellationToken);
 
     Console.WriteLine("1 test");
     Console.WriteLine($"To: {emailTo}");
     Console.WriteLine($"Subject: {emailSubject}");
     Console.WriteLine($"Body: {emailBody}");
 
-    await sender.SendAsync(message);
+    await sender.SendAsync(message, cancellationToken);
 
     Console.WriteLine("2 more dummies");
-    await sender.SendAsync(empty);
-    await sender.SendAsync(empty);
+    await sender.SendAsync(empty, cancellationToken);
+    await sender.SendAsync(empty, cancellationToken);
 
     Console.WriteLine("Successfully sent");
 }
@@ -86,21 +88,21 @@ do
     Console.WriteLine("");
     Console.WriteLine("Done waiting!");
 
-    emailFound = await ReadEmails();
+    emailFound = await ReadEmails(cancellationToken);
 
     if (emailFound) numberOfAttempts = NumberOfReadAttempts;
 } 
 while (numberOfAttempts < NumberOfReadAttempts);
 Console.WriteLine("============================== READING ==============================\n");
 
-async Task<bool> ReadEmails()
+async Task<bool> ReadEmails(CancellationToken cancellationToken)
 {
     var found = false;
 
     try
     {
         Console.WriteLine("Reading email(s)...");
-        var emails = await reader.FetchAsync();
+        var emails = await reader.FetchAsync(cancellationToken);
         Console.WriteLine("Successfully read");
 
         var count = 1;
