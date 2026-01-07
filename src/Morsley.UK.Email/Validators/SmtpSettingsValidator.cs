@@ -16,15 +16,15 @@ public class SmtpSettingsValidator : IValidateOptions<SmtpSettings>
             errors.Add("SmtpSettings.Password is not configured. Please set it in user secrets.");
         }
 
-        if (options.FromAddress == "[Stored in User Secrets]")
-        {
-            errors.Add("SmtpSettings.FromAddress is not configured. Please set it in user secrets.");
-        }
+        //if (options.FromAddress == "[Stored in User Secrets]")
+        //{
+        //    errors.Add("SmtpSettings.FromAddress is not configured. Please set it in user secrets.");
+        //}
 
-        if (options.ToAddress == "[Stored in User Secrets]")
-        {
-            errors.Add("SmtpSettings.ToAddress is not configured. Please set it in user secrets.");
-        }
+        //if (options.ToAddress == "[Stored in User Secrets]")
+        //{
+        //    errors.Add("SmtpSettings.ToAddress is not configured. Please set it in user secrets.");
+        //}
 
         if (errors.Any())
         {

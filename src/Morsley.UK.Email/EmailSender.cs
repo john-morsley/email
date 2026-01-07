@@ -14,12 +14,14 @@ public class EmailSender : IEmailSender
         var settings = _options.CurrentValue;
         
         var mime = new MimeMessage();
-        mime.From.Add(new MailboxAddress(settings.FromName, settings.FromAddress));
+        //mime.From.Add(new MailboxAddress(settings.FromName, settings.FromAddress));
+        mime.From.Add(new MailboxAddress(message.From, message.From));
         foreach (var a in message.To) mime.To.Add(MailboxAddress.Parse(a));
         foreach (var a in message.Cc) mime.Cc.Add(MailboxAddress.Parse(a));
         foreach (var a in message.Bcc) mime.Bcc.Add(MailboxAddress.Parse(a));
         //if (!string.IsNullOrWhiteSpace(message.ReplyTo)) mime.ReplyTo.Add(MailboxAddress.Parse(message.ReplyTo));
-        mime.ReplyTo.Add(MailboxAddress.Parse(settings.FromAddress));
+        //mime.ReplyTo.Add(MailboxAddress.Parse(settings.FromAddress));
+        mime.ReplyTo.Add(MailboxAddress.Parse(message.From));
         mime.Subject = message.Subject ?? "";
 
         var body = new BodyBuilder { TextBody = message.TextBody, HtmlBody = message.HtmlBody };
@@ -59,6 +61,6 @@ public class EmailSender : IEmailSender
             await client.DisconnectAsync(true, token);
         }
 
-        message.From = settings.FromAddress;
+        //message.From = settings.FromAddress;
     }
 }

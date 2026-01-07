@@ -18,7 +18,7 @@ public abstract class CosmosDbEmailPersistenceService
 
     protected ILogger Logger { get; }
 
-    public async Task<string> SaveAsync(Common.Models.EmailMessage email, CancellationToken cancellationToken)
+    public async Task<string> SaveAsync(EmailMessage email, CancellationToken cancellationToken)
     {
         try
         {
@@ -47,7 +47,7 @@ public abstract class CosmosDbEmailPersistenceService
         }
     }
 
-    public async Task<Common.Models.EmailMessage?> GetByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<EmailMessage?> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         try
         {

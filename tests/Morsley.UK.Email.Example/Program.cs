@@ -19,6 +19,7 @@ var host = Host.CreateDefaultBuilder(args)
     .Build();
 
 var unique = Guid.NewGuid();
+var emailFrom = host.Services.GetRequiredService<IConfiguration>()["Data:FromAddress"];
 var emailTo = host.Services.GetRequiredService<IConfiguration>()["Data:ToAddress"];
 var emailSubject = $"Morsley.UK.Email.Example - {unique}";
 var emailBody = $"Unique: {unique}";
@@ -27,12 +28,14 @@ var sender = host.Services.GetRequiredService<IEmailSender>();
 
 var message = new Morsley.UK.Email.Common.Models.EmailMessage 
 { 
+    From = emailFrom,
     To = [ emailTo ], 
     Subject = emailSubject, 
     TextBody = emailBody 
 };
 var empty = new Morsley.UK.Email.Common.Models.EmailMessage 
-{ 
+{
+    From = emailFrom,
     To = [ emailTo ], 
     Subject = $"Morsley.UK.Email.Example - {DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss:fff")}", 
     TextBody = $"Unique: {Guid.NewGuid()}"
